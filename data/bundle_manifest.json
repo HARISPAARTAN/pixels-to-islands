@@ -1,0 +1,702 @@
+{
+ "schema": "explainer_bundle_manifest_v1",
+ "course": "Pixels to Islands",
+ "generated_utc": "2026-10-13T00:22:14Z",
+ "plan": "docs/superpowers/plans/2026-10-13-explainer-v2-build.md, Task 4 and design decisions 8 to 11",
+ "spec": "docs/superpowers/specs/2026-10-13-explainer-v2-design.md, section 9",
+ "script": {
+  "path": "build/make_bundle.py",
+  "sha256": "d7ca2087cb3cb2362eb351c17e2eb86c8360053f2d258f807e6b84324fb73b67",
+  "argv": [
+   "--images",
+   "/media/homes/hari/thesisoct/explainer_bundle_20261013/images",
+   "--anchor",
+   "/media/homes/hari/thesisoct/explainer_bundle_20261013/anchor.json",
+   "--out",
+   "/media/homes/hari/thesisoct/explainer_bundle_20261013/out2",
+   "--facts-out",
+   "/media/homes/hari/thesisoct/explainer_bundle_20261013/out2-facts.json"
+  ]
+ },
+ "environment": {
+  "host": "gpu01",
+  "interpreter": "/media/homes/hari/thesisoct/env/miniconda3/envs/selfpatch-export/bin/python",
+  "python": "3.12.14",
+  "platform": "Linux-5.15.0-106-generic-x86_64-with-glibc2.31",
+  "torch": "2.12.0+cu126",
+  "torchvision": "0.27.0+cu126",
+  "numpy": "1.26.4",
+  "scipy": "1.17.1",
+  "pillow": "12.2.0",
+  "torch_threads": 8,
+  "requested_threads": 8,
+  "device": "cpu",
+  "CUDA_VISIBLE_DEVICES": "-1",
+  "OMP_NUM_THREADS": "8",
+  "PYTHONPATH": "/media/homes/hari/thesisoct/export_con"
+ },
+ "export_package": {
+  "root": "/media/homes/hari/thesisoct/export_con",
+  "git_head": "604d6a3cb21ee8b539e5440be9fc7208bcc80b6b",
+  "reading_commit": "9664b5e9f7b65e33c062cd2e78bc3013ef0d5073",
+  "reading_commit_txt_sha256": "c6515220789f96489723b49b9569411e32a4313cb60568538df1cd0d5a2547b8",
+  "module_sha256": {
+   "src/feature_extractor_v2.py": "9666e73ee14eddedd9802072a08af0969f8be5c92625cd6e963df8e72c46953e",
+   "src/attention_keys_v2.py": "a370bd9d839a068a7b34ababd59160b02dbe0651d93712296097bc8f084a9611",
+   "src/key_rule_v2.py": "1e9a23ba8efe74fa2b0a8041337e9cf025d7769bc39dd376000e581d76175c73",
+   "src/decoder_v2.py": "568d21036694ab2160dfb7b50f2aca0b8f62840205c93957445aa02845ae8040",
+   "src/maskcut_adapter.py": "4ee6876afaae2ecb07cbe702cf2341deebf8a926f130c5911ce10307ead7941f",
+   "src/official_selfpatch_control.py": "cf040e577d57f52cb94ecaded59408ac18637a7f04a75924558f0b9873db79a1"
+  },
+  "maskcut_sources_sha256": {
+   "research/references/repos/CutLER/maskcut/maskcut.py": "1f08ae0e95a93988025196d508682d3dab1dbd4246cceb962eaa59182584c3e5",
+   "research/references/repos/CutLER/third_party/TokenCut/unsupervised_saliency_detection/object_discovery.py": "0577fb292ded09568f57762019d746f0ac2d1b9ad8055b49ed05a7fb136f5c34",
+   "research/references/repos/CutLER/third_party/TokenCut/unsupervised_saliency_detection/metric.py": "d0c788bb7438800279f5559e1dfd9959283e24b22e4828f2d0103b808b14f679",
+   "research/references/repos/CutLER/LICENSE": "1349a4b6148492b44f629e64eed676612e234fe9a839e4f3b277c1482c8849f1",
+   "research/references/repos/CutLER/third_party/TokenCut/LICENSE": "a8b8f8d969f1775a00f7580c491d859e973bb7f3b70d2f28f021e24a242768a7"
+  },
+  "dino_source_sha256": "5b2e1aafba969b710358598f13a37df75b56b43a81d29d21f76fa3593d18097e"
+ },
+ "decoder_config": {
+  "path": "/media/homes/hari/thesisoct/export_con/configs/decoder_v2_frozen_v2.json",
+  "sha256": "b9cbe9d561c04ed9ef50b7e762cab558245253ec1fe1697f9c9e37345d053e75",
+  "values": {
+   "eps": 1e-05,
+   "feature": "keys",
+   "key_rule": "mean_subtract",
+   "min_area_ratio": 0.01,
+   "n": 5,
+   "on_degenerate": "keep_prior",
+   "overlap_iou": 0.5,
+   "postprocess": "bilateral",
+   "score": "ncut",
+   "side": 480,
+   "tau": 0.2,
+   "thread_limit": 1,
+   "weights": "teacher"
+  }
+ },
+ "rule": {
+  "path": "cluster/contrastive.py",
+  "lines": "119-212",
+  "commit": "3c49ec44d0bbd0951084f82656baa8ece68376b9",
+  "sha256": "1655129115a459bb16064358ba35f225dacb5a08b3e3661117349c37c7a1fdb6",
+  "functions": [
+   "_off_diagonal",
+   "all_pairs_similarity",
+   "thresholds",
+   "positive_mask",
+   "negative_mask",
+   "contrastive_loss"
+  ],
+  "k": 8,
+  "k_local": 4,
+  "neg_pct": 20,
+  "cap_pos": 24,
+  "cap_neg": 48,
+  "tau": 0.2,
+  "taus": [
+   0.1,
+   0.2,
+   0.3
+  ],
+  "precision": "the sets in float32 as the trainer's con_terms; the term, its per-anchor values and the gradient in float64 from the float32 tokens"
+ },
+ "views": "each view: the short side resized to the side with PIL's bicubic filter (the long side to int(side * long / short)), then the centre square (offsets int(round((size - side) / 2))); box_native is that square in the photograph's own pixels. The readings' exports resize the whole image to 480 by 480 instead.",
+ "models": {
+  "dino": {
+   "family": "converted_dino",
+   "weights": "pretrained",
+   "path": "/media/homes/hari/thesisoct/job/dino_deitsmall16_pretrain.pth",
+   "bytes": 86710517,
+   "sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+   "checkpoint_meta": {},
+   "source_hashes": {
+    "research/references/repos/SelfPatch/LICENSE": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "research/references/repos/SelfPatch/main_selfpatch.py": "5395cb9bfd2b1d32ee38c20a13206eb9b527c1c837bae177bee00a323cd07abc",
+    "research/references/repos/SelfPatch/selfpatch_vision_transformer.py": "d85397ac582113a05ccac254339427cffa3cb88cef9110dfefd8e19b47501567",
+    "research/references/repos/SelfPatch/utils.py": "1d97654a7c6ad693467769fb665e7a236b0f0ddccb3d34a251295e42ed697574"
+   },
+   "load_seconds": 0.8,
+   "what": "the converted DINO ViT-S/16 (run 2's start): DINO's backbone in the SelfPatch network, without its CLS token and final norm"
+  },
+  "selfpatch": {
+   "family": "released_selfpatch",
+   "weights": "teacher",
+   "path": "/media/homes/hari/thesisoct/job/dino_selfpatch.pth",
+   "bytes": 216572021,
+   "sha256": "3656c2f42b724ee8ee546c06eb154f7235b56845c39fd52e40bf8cfc29ef7e43",
+   "checkpoint_meta": {},
+   "source_hashes": {
+    "research/references/repos/SelfPatch/LICENSE": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "research/references/repos/SelfPatch/main_selfpatch.py": "5395cb9bfd2b1d32ee38c20a13206eb9b527c1c837bae177bee00a323cd07abc",
+    "research/references/repos/SelfPatch/selfpatch_vision_transformer.py": "d85397ac582113a05ccac254339427cffa3cb88cef9110dfefd8e19b47501567",
+    "research/references/repos/SelfPatch/utils.py": "1d97654a7c6ad693467769fb665e7a236b0f0ddccb3d34a251295e42ed697574"
+   },
+   "load_seconds": 0.7,
+   "what": "the released DINO+SelfPatch ViT-S/16 checkpoint (the start of runs 1 and 3)"
+  },
+  "con1": {
+   "family": "official",
+   "weights": "teacher",
+   "path": "/media/homes/hari/thesisoct/outputs_con/campaign_lr1e-4_ep20_pair1_combined_LC0_CON/ckpt_epoch020.pt",
+   "bytes": 813645169,
+   "sha256": "196c8d8ff69256410b48fa80a6d5ffd88e4c389804fd6ed37cd8f1d552fab2b2",
+   "checkpoint_meta": {
+    "init_dino_sha256": null,
+    "arm": "combined",
+    "seed": 906,
+    "pair": 1,
+    "epoch": 20,
+    "step": 9240,
+    "init_source": "released_selfpatch",
+    "init_source_sha256": "3656c2f42b724ee8ee546c06eb154f7235b56845c39fd52e40bf8cfc29ef7e43"
+   },
+   "source_hashes": {
+    "research/references/repos/SelfPatch/LICENSE": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "research/references/repos/SelfPatch/main_selfpatch.py": "5395cb9bfd2b1d32ee38c20a13206eb9b527c1c837bae177bee00a323cd07abc",
+    "research/references/repos/SelfPatch/selfpatch_vision_transformer.py": "d85397ac582113a05ccac254339427cffa3cb88cef9110dfefd8e19b47501567",
+    "research/references/repos/SelfPatch/utils.py": "1d97654a7c6ad693467769fb665e7a236b0f0ddccb3d34a251295e42ed697574"
+   },
+   "load_seconds": 1.5,
+   "what": "run 1 (the rule from the released SelfPatch start), the teacher of its final epoch-20 envelope"
+  },
+  "con2": {
+   "family": "official",
+   "weights": "teacher",
+   "path": "/media/homes/hari/thesisoct/outputs_con_dino/campaign_lr1e-4_ep20_pair1_combined_LC0_CON/ckpt_epoch020.pt",
+   "bytes": 813644913,
+   "sha256": "29d298a885ee0c99521e13d0d9846500a2565ad2b89b0bb59f20e97ae4303dec",
+   "checkpoint_meta": {
+    "init_dino_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+    "arm": "combined",
+    "seed": 906,
+    "pair": 1,
+    "epoch": 20,
+    "step": 9240,
+    "init_source": "converted_dino",
+    "init_source_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7"
+   },
+   "source_hashes": {
+    "research/references/repos/SelfPatch/LICENSE": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "research/references/repos/SelfPatch/main_selfpatch.py": "5395cb9bfd2b1d32ee38c20a13206eb9b527c1c837bae177bee00a323cd07abc",
+    "research/references/repos/SelfPatch/selfpatch_vision_transformer.py": "d85397ac582113a05ccac254339427cffa3cb88cef9110dfefd8e19b47501567",
+    "research/references/repos/SelfPatch/utils.py": "1d97654a7c6ad693467769fb665e7a236b0f0ddccb3d34a251295e42ed697574"
+   },
+   "load_seconds": 1.5,
+   "what": "run 2 (the rule from the DINO start), the teacher of its final epoch-20 envelope"
+  },
+  "con3": {
+   "family": "official",
+   "weights": "teacher",
+   "path": "/media/homes/hari/thesisoct/outputs_con_head/campaign_lr1e-4_ep20_pair1_combined_LC0_CON/ckpt_epoch020.pt",
+   "bytes": 824157641,
+   "sha256": "b54ea4455c4f97c8994c56515b364ce57c222a21857b3cc66acdf6904fed2726",
+   "checkpoint_meta": {
+    "init_dino_sha256": null,
+    "arm": "combined",
+    "seed": 906,
+    "pair": 1,
+    "epoch": 20,
+    "step": 9240,
+    "init_source": "released_selfpatch",
+    "init_source_sha256": "3656c2f42b724ee8ee546c06eb154f7235b56845c39fd52e40bf8cfc29ef7e43"
+   },
+   "source_hashes": {
+    "research/references/repos/SelfPatch/LICENSE": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "research/references/repos/SelfPatch/main_selfpatch.py": "5395cb9bfd2b1d32ee38c20a13206eb9b527c1c837bae177bee00a323cd07abc",
+    "research/references/repos/SelfPatch/selfpatch_vision_transformer.py": "d85397ac582113a05ccac254339427cffa3cb88cef9110dfefd8e19b47501567",
+    "research/references/repos/SelfPatch/utils.py": "1d97654a7c6ad693467769fb665e7a236b0f0ddccb3d34a251295e42ed697574"
+   },
+   "load_seconds": 1.8,
+   "what": "run 3 (the rule through the projection head, from the released start), the teacher of its final epoch-20 envelope (the backbone's tokens; the projection head plays no part)"
+  },
+  "con2_student": {
+   "family": "official",
+   "weights": "student",
+   "path": "/media/homes/hari/thesisoct/outputs_con_dino/campaign_lr1e-4_ep20_pair1_combined_LC0_CON/ckpt_epoch020.pt",
+   "bytes": 813644913,
+   "sha256": "29d298a885ee0c99521e13d0d9846500a2565ad2b89b0bb59f20e97ae4303dec",
+   "checkpoint_meta": {
+    "init_dino_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+    "arm": "combined",
+    "seed": 906,
+    "pair": 1,
+    "epoch": 20,
+    "step": 9240,
+    "init_source": "converted_dino",
+    "init_source_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7"
+   },
+   "source_hashes": {
+    "research/references/repos/SelfPatch/LICENSE": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "research/references/repos/SelfPatch/main_selfpatch.py": "5395cb9bfd2b1d32ee38c20a13206eb9b527c1c837bae177bee00a323cd07abc",
+    "research/references/repos/SelfPatch/selfpatch_vision_transformer.py": "d85397ac582113a05ccac254339427cffa3cb88cef9110dfefd8e19b47501567",
+    "research/references/repos/SelfPatch/utils.py": "1d97654a7c6ad693467769fb665e7a236b0f0ddccb3d34a251295e42ed697574"
+   },
+   "load_seconds": 2.3,
+   "what": "run 2's student of the same envelope (the network the loss trains)"
+  }
+ },
+ "original_dino": {
+  "source": "/media/homes/hari/thesisoct/export_con/research/references/repos/DINO/vision_transformer.py",
+  "source_sha256": "5b2e1aafba969b710358598f13a37df75b56b43a81d29d21f76fa3593d18097e",
+  "weights_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+  "strict_load": true
+ },
+ "inputs": {
+  "images": {
+   "000000114269": {
+    "sha256": "ec62e965a2699adb4d043c0468817062bc7aa5019358fdf8ececd104d3de36e8",
+    "bytes": 121477
+   },
+   "000000255714": {
+    "sha256": "7b523991fafc71afc65f234193ec3c87a5569fdb3b41f938ff5f621b4ebeaf8b",
+    "bytes": 213087
+   },
+   "000000106525": {
+    "sha256": "6f0ca7efdb23d7cf5e75ecb32e85a5feb547fedbe6b971e1d9f40cc03cba3c16",
+    "bytes": 91513
+   },
+   "000000205668": {
+    "sha256": "b5f4d091a6e1c62abde3284720f01ff20e63318b1fbcfb9f66018483e67d0b92",
+    "bytes": 211428
+   },
+   "000000372768": {
+    "sha256": "fd5584d302523e186147994026720f56a5bc7a3b7e387814b65b5a34776a5db0",
+    "bytes": 203533
+   },
+   "000000288848": {
+    "sha256": "8b072f0e9110a1efafc4eee82895c5d5f5c7ffbccaa8920f9aa5a592e2301ee8",
+    "bytes": 195732
+   },
+   "000000455480": {
+    "sha256": "42170db67bc89ef60a99a9b64c8021291c5cb6a3a919ebc1c9b60dcfb62c0c0d",
+    "bytes": 87234
+   },
+   "000000151777": {
+    "sha256": "667e1c2ef6ae81dcb3d4e2c2d485cf60cfa27505eb2566363fe7764f5feecd5c",
+    "bytes": 269575
+   }
+  },
+  "anchor": {
+   "value": 34,
+   "reason": "Patch 34 (row 2, column 6 of the 224 px view) holds the bulldog's black nose at the centre of its face; the dog is the larger animal, and patch 35 beside it holds an eye.",
+   "sha256": "155cfec62ff7007f2ee35a328f53b72a738350085d5edc8431dae4ac9b8d8eaf"
+  },
+  "progress": {
+   "con1": {
+    "path": "/media/homes/hari/thesisoct/outputs_con/campaign_lr1e-4_ep20_pair1_combined_LC0_CON/progress.jsonl",
+    "sha256": "f74fe7651e1fe54bcae007aedca6df67163846f2227f87c39ee652252b3904ed"
+   },
+   "con2": {
+    "path": "/media/homes/hari/thesisoct/outputs_con_dino/campaign_lr1e-4_ep20_pair1_combined_LC0_CON/progress.jsonl",
+    "sha256": "36a0ddc9f8c209d84f3131fc396716870ebfd2c646440141fdc79059e09d1571"
+   },
+   "con3": {
+    "path": "/media/homes/hari/thesisoct/outputs_con_head/campaign_lr1e-4_ep20_pair1_combined_LC0_CON/progress.jsonl",
+    "sha256": "785eac2497ef1b7797fd1fa57f0143d0f2254ceb9ff5dfba643fafed4386a959"
+   }
+  }
+ },
+ "quantisation": {
+  "rule": "per row: scale = max|x| / 127 (1 for an all-zero row), int8 = round(x / scale); the page decodes int8 * scale; cosine_error_max is the largest change of a pairwise cosine between the float32 rows and the decoded rows",
+  "limit": 0.01,
+  "tokens_cosine_error_max": 0.006207252531931051,
+  "keys_cosine_error_max": 0.003674321477308229,
+  "keys_mean_subtracted_cosine_error_max": 0.006920779285399359
+ },
+ "hygiene": "images only: no label, mask, box, category or caption is read; eight COCO train2017 images of the image-only pool manifest; no validation or test image; CPU only (CUDA_VISIBLE_DEVICES=-1); teaching material that enters no scientific path",
+ "facts": {
+  "path": "facts/bundle_facts.json",
+  "sha256": "684bf227c828a6bb689edb945ffebfef073e9a2185ad85a31f218ce435aba7ba",
+  "entries": 237
+ },
+ "elapsed_seconds": 31.0,
+ "files": [
+  {
+   "path": "000000106525_con1_tokens224.json",
+   "sha256": "8ace522e461e66d5c2ce12836a926d5b6229c07e40d9a1c596b2c0c97ed57cb5",
+   "bytes": 104806
+  },
+  {
+   "path": "000000106525_con2_keys480.json",
+   "sha256": "c9648f734929f7b34c667d7d264e4092de8b442bb10f3f58d9e8d2ddc4cf72ea",
+   "bytes": 480058
+  },
+  {
+   "path": "000000106525_con2_tokens224.json",
+   "sha256": "3e5e12ac43a56ce1da6d4cb1dcd4167537df2d4cfa57c396cdcc25669e14dc30",
+   "bytes": 104982
+  },
+  {
+   "path": "000000106525_con3_tokens224.json",
+   "sha256": "268422afaebcf30534a86956fe6108510fdd600e43651e897e88604c8a2eaa30",
+   "bytes": 104853
+  },
+  {
+   "path": "000000106525_dino_keys480.json",
+   "sha256": "5a653b84d1840aeb88df03057684f96fe90ea60750052ab123f9a72ffebf4703",
+   "bytes": 480091
+  },
+  {
+   "path": "000000106525_dino_tokens224.json",
+   "sha256": "ea82f349bc929259ee9cee8781280b606e1d68eb24ff745126f7b7e8b18201d4",
+   "bytes": 104994
+  },
+  {
+   "path": "000000106525_selfpatch_keys480.json",
+   "sha256": "96795b5501cfc939f340a23999e5c04b98616624aedca2aec3deb30cc14b48a9",
+   "bytes": 479700
+  },
+  {
+   "path": "000000106525_selfpatch_tokens224.json",
+   "sha256": "166630554054b617717565cedb905688c3e9706ad441ccc7e6f42f0467883602",
+   "bytes": 104865
+  },
+  {
+   "path": "000000114269_con1_tokens224.json",
+   "sha256": "a5928a61fa8c1f75f82e6503ec3f4908b5da67853de18b8841675b9fa6dbc551",
+   "bytes": 104813
+  },
+  {
+   "path": "000000114269_con2_keys480.json",
+   "sha256": "84302738a38eeac63c4e49615e164289ebb876b62a5bffa71c3ffc89d06828fd",
+   "bytes": 480046
+  },
+  {
+   "path": "000000114269_con2_tokens224.json",
+   "sha256": "fd6bde7ceaec650154b4a3bbce70cb1c814bc82a857fb7e0baf6777043e1abc4",
+   "bytes": 104966
+  },
+  {
+   "path": "000000114269_con3_tokens224.json",
+   "sha256": "44cf6ae9bb3971de4df4b10ecf8fc2c607d09e6f452a3cae3aa5df67b9a65062",
+   "bytes": 104824
+  },
+  {
+   "path": "000000114269_dino_keys480.json",
+   "sha256": "5d926d32969c773cafa1f3acfe03608315c61b9454931566109f881106d3b69f",
+   "bytes": 480144
+  },
+  {
+   "path": "000000114269_dino_tokens224.json",
+   "sha256": "084792b9672ba16c13d505d58c4270220ed829a72ebe3ec286ed8f5a1128682f",
+   "bytes": 105002
+  },
+  {
+   "path": "000000114269_selfpatch_keys480.json",
+   "sha256": "fc83237480fca109a255449b8aa5f9314f245de9f2ef626c2dbdda8d23dee4fc",
+   "bytes": 479671
+  },
+  {
+   "path": "000000114269_selfpatch_tokens224.json",
+   "sha256": "65dea694375b950567b9d934f025b945e438f2e85f2e06948fde18cf8e8f107a",
+   "bytes": 104846
+  },
+  {
+   "path": "000000151777_con1_tokens224.json",
+   "sha256": "841447be416dd427177cc5d95e8481aecfcf00bdf6edf44f6a6ae2f37c8c2f88",
+   "bytes": 104808
+  },
+  {
+   "path": "000000151777_con2_keys480.json",
+   "sha256": "18e6b66de778e771e2e3bcd1e26262d74fccbcc62c141c81ce02e84af2ec4a1e",
+   "bytes": 480074
+  },
+  {
+   "path": "000000151777_con2_tokens224.json",
+   "sha256": "95503a5da7b8f900e38d20626891078df3718d33cf4a5467492d8275e66f604e",
+   "bytes": 104963
+  },
+  {
+   "path": "000000151777_con3_tokens224.json",
+   "sha256": "7e47108bf2fad2d466633ff0286eb722269e951cad39ecaafb360271b782bf68",
+   "bytes": 104827
+  },
+  {
+   "path": "000000151777_dino_keys480.json",
+   "sha256": "1dffac2f1de91e4f982956bc8e6324f4139f4dc9072cb277dede2c0fdd373b40",
+   "bytes": 480139
+  },
+  {
+   "path": "000000151777_dino_tokens224.json",
+   "sha256": "1f4753ff48b22b7e19cf8bb504f2c83c5fd489f8bd9559f9a31a3514881c0f82",
+   "bytes": 105009
+  },
+  {
+   "path": "000000151777_selfpatch_keys480.json",
+   "sha256": "04aafe4bfbf615585e2522319b39c0555c6ca24500aa80383bbb9f639817c1d9",
+   "bytes": 479707
+  },
+  {
+   "path": "000000151777_selfpatch_tokens224.json",
+   "sha256": "7002d2b9f0822c90cd1e2092acac8ad50ee96646100d59c89e36ec8c9cf75d71",
+   "bytes": 104839
+  },
+  {
+   "path": "000000205668_con1_tokens224.json",
+   "sha256": "4ffccadafdc531789636fad863c439c4f84925e672a608d1db6e8bfff9644cec",
+   "bytes": 104801
+  },
+  {
+   "path": "000000205668_con2_keys480.json",
+   "sha256": "5dda545f73d60f2520c4badb5db826a08b625bc79c329fb1087b98aa849fd076",
+   "bytes": 480182
+  },
+  {
+   "path": "000000205668_con2_tokens224.json",
+   "sha256": "e6ddead1eca8c4e38f43fb8bad1f2c08f3f63ef58f4f01d1c002127303b62165",
+   "bytes": 104991
+  },
+  {
+   "path": "000000205668_con3_tokens224.json",
+   "sha256": "0fa4e7ede26e8c5b14aabf6999b610ad372c3dce0e58f574b88e348262abaea2",
+   "bytes": 104815
+  },
+  {
+   "path": "000000205668_dino_keys480.json",
+   "sha256": "2aa0d42e4ea315238a4bb0189868586045043d5009687b3a10c59df02490a0d1",
+   "bytes": 480115
+  },
+  {
+   "path": "000000205668_dino_tokens224.json",
+   "sha256": "254931a79db64ff10d1d046dc14d0012616384c3436be9546f2ee19c1ce7feed",
+   "bytes": 104990
+  },
+  {
+   "path": "000000205668_selfpatch_keys480.json",
+   "sha256": "b0622f5493df5fd16d558e981af8cb3a7a27b0bf6271579b189e9b4a50d360da",
+   "bytes": 479714
+  },
+  {
+   "path": "000000205668_selfpatch_tokens224.json",
+   "sha256": "05025df5a3cd5cb7b86e7583663e62c31e3f0e192418bf29366ad01c093c39d9",
+   "bytes": 104827
+  },
+  {
+   "path": "000000255714_con1_tokens224.json",
+   "sha256": "045151bd6623aa37cbe8127a269b944c4fc9a2caadafef791c5d45816ea96a93",
+   "bytes": 104804
+  },
+  {
+   "path": "000000255714_con2_keys480.json",
+   "sha256": "1cc9390f6d997d9d642f047ae47ba564705eca334cce57f7596967d88e72fe37",
+   "bytes": 480031
+  },
+  {
+   "path": "000000255714_con2_tokens224.json",
+   "sha256": "b242f4ddf4afcee357d91e589483b6f3ec6ac52eab270604e7c3560e999b4b4f",
+   "bytes": 104949
+  },
+  {
+   "path": "000000255714_con3_tokens224.json",
+   "sha256": "bb5eb7502125972542638d7779cdc616770e8785b075c97cbaa3c50b5e438d09",
+   "bytes": 104840
+  },
+  {
+   "path": "000000255714_dino_keys480.json",
+   "sha256": "7d42d643761b2db99012da54d29d5d3e06d9b770b45b69ab350b70662e5888f6",
+   "bytes": 480152
+  },
+  {
+   "path": "000000255714_dino_tokens224.json",
+   "sha256": "07121318a5688cc67925a182b095b8eaa1b2324d88350b02442476de78b368ce",
+   "bytes": 104987
+  },
+  {
+   "path": "000000255714_selfpatch_keys480.json",
+   "sha256": "6feea68047468ccff4c418fbd25d06c6deca9b46796b7096ce3a6d8897a3d1e7",
+   "bytes": 479702
+  },
+  {
+   "path": "000000255714_selfpatch_tokens224.json",
+   "sha256": "cf032b9dcb0e649bd4994e21880e97cc77961497582eb76087db31d15a263531",
+   "bytes": 104864
+  },
+  {
+   "path": "000000288848_con1_tokens224.json",
+   "sha256": "8e5389458b4cac547a962408512af9bc246e5ad4ca647f2367c7e34244c439db",
+   "bytes": 104815
+  },
+  {
+   "path": "000000288848_con2_keys480.json",
+   "sha256": "bb6142244ca51be9ce50bf4712cf89a44316fc8ed82c81dff4b6995c2d24d5a7",
+   "bytes": 480049
+  },
+  {
+   "path": "000000288848_con2_tokens224.json",
+   "sha256": "77d46e205a6e9b725c4b9db26e922cc4fe637901359c65472abe275bbf17afbc",
+   "bytes": 104955
+  },
+  {
+   "path": "000000288848_con3_tokens224.json",
+   "sha256": "d70cdb738ff012a23f5817d1c2a6441477c0cf4f4b8de8540050760475b5a5f5",
+   "bytes": 104844
+  },
+  {
+   "path": "000000288848_dino_keys480.json",
+   "sha256": "886a7dd4cf864302f80efa526549fda224e30b14bcd8f8acd1e3495197a24815",
+   "bytes": 480187
+  },
+  {
+   "path": "000000288848_dino_tokens224.json",
+   "sha256": "689a86484ad9388e872f69b198cfe8b0aaead78e37497a3ac99cecba905a583f",
+   "bytes": 104996
+  },
+  {
+   "path": "000000288848_selfpatch_keys480.json",
+   "sha256": "9f5e79a5c60da44d97cff2d74c41b48917c3999fbaf0a28bee547928b9292d4f",
+   "bytes": 479711
+  },
+  {
+   "path": "000000288848_selfpatch_tokens224.json",
+   "sha256": "91af9ed535ed0f113e7e7cbe159464a0213994a4cdcb3d9b89d562f22c5908f1",
+   "bytes": 104858
+  },
+  {
+   "path": "000000372768_con1_tokens224.json",
+   "sha256": "e22828128d925e8716fb947cbb7b1eaac6bf46f438ca04876222bf0efe46d3b1",
+   "bytes": 104813
+  },
+  {
+   "path": "000000372768_con2_keys480.json",
+   "sha256": "96d8ad62e087ca715f46303a4406481e91f7e6daa1465ebdd424f009df475f5c",
+   "bytes": 480036
+  },
+  {
+   "path": "000000372768_con2_tokens224.json",
+   "sha256": "d7943e855f7c3adfbcbc757d25181c5391042f7e74b691e8eabcfe1ffee10e71",
+   "bytes": 104936
+  },
+  {
+   "path": "000000372768_con3_tokens224.json",
+   "sha256": "87b1ac28b314022b318ddddb6c9ac71e7fbd7e90fcd88db896957454f722cd52",
+   "bytes": 104844
+  },
+  {
+   "path": "000000372768_dino_keys480.json",
+   "sha256": "98346abb8614d8be4ac07080b4c1146c797962465647c5424b8a51392245a11d",
+   "bytes": 480152
+  },
+  {
+   "path": "000000372768_dino_tokens224.json",
+   "sha256": "2b15ec22bc9f426641a65a6948e7ca87e84a036690a5f6358222b9e1e2a6984b",
+   "bytes": 104997
+  },
+  {
+   "path": "000000372768_selfpatch_keys480.json",
+   "sha256": "4fcd02f8cb37ec25503ea54a074902bb4ab9d0996478b82311875dde997eb90a",
+   "bytes": 479715
+  },
+  {
+   "path": "000000372768_selfpatch_tokens224.json",
+   "sha256": "d008de23eddd1a8a86ebd9d31ef3302fa359bc1ff2bd6deadc48274e6071797a",
+   "bytes": 104860
+  },
+  {
+   "path": "000000455480_con1_tokens224.json",
+   "sha256": "1332e5be12801f6055d78621e93a6ec83fea22d3fea75a3e3a393d273721df44",
+   "bytes": 104816
+  },
+  {
+   "path": "000000455480_con2_keys480.json",
+   "sha256": "4afe32088ecb9003623398c870f0924b0d7b34668fe1f4d6dd34fa39deccdf37",
+   "bytes": 480149
+  },
+  {
+   "path": "000000455480_con2_tokens224.json",
+   "sha256": "85b44c5d85571ce22aecad0e58920081fffcd6432de2d36df02ffcfa8dcaee3f",
+   "bytes": 104972
+  },
+  {
+   "path": "000000455480_con3_tokens224.json",
+   "sha256": "4d482b17b13221f5042fad8b8f3173b25b30cb68671dc3f3484663bd03f677c2",
+   "bytes": 104827
+  },
+  {
+   "path": "000000455480_dino_keys480.json",
+   "sha256": "20119152ec4155bc9e82d95d8ae96657f5b5ea9b4006a22f271230860301a105",
+   "bytes": 480141
+  },
+  {
+   "path": "000000455480_dino_tokens224.json",
+   "sha256": "3a2b22997474090c6abeea508739b678fb4245a586344477b4daa8ef185196db",
+   "bytes": 104991
+  },
+  {
+   "path": "000000455480_selfpatch_keys480.json",
+   "sha256": "22617e58a2aec1e5fb7f2134cb6bd169102cc054274c396082b5647fd5248276",
+   "bytes": 479733
+  },
+  {
+   "path": "000000455480_selfpatch_tokens224.json",
+   "sha256": "4a54d63bbf655ef0de91e4ccc44806091842af7775d91dbf915c140e953670a5",
+   "bytes": 104847
+  },
+  {
+   "path": "anchor.json",
+   "sha256": "155cfec62ff7007f2ee35a328f53b72a738350085d5edc8431dae4ac9b8d8eaf",
+   "bytes": 224
+  },
+  {
+   "path": "followed.json",
+   "sha256": "a992c9c90622b1222e1540653f8a04801b5345653c893c0aa8257f2d37700be0",
+   "bytes": 6516367
+  },
+  {
+   "path": "images.json",
+   "sha256": "b53a00fb0c8834973c8ecad222dd0b25a8386420b6b63d11e61d9fb4eb6f80ce",
+   "bytes": 12045
+  },
+  {
+   "path": "images/000000106525.jpg",
+   "sha256": "6f0ca7efdb23d7cf5e75ecb32e85a5feb547fedbe6b971e1d9f40cc03cba3c16",
+   "bytes": 91513
+  },
+  {
+   "path": "images/000000114269.jpg",
+   "sha256": "ec62e965a2699adb4d043c0468817062bc7aa5019358fdf8ececd104d3de36e8",
+   "bytes": 121477
+  },
+  {
+   "path": "images/000000114269_grid.png",
+   "sha256": "eae3a2f935fd78cb814a29578407ccbbce11b3e77dec8cc548da466ffa398f3f",
+   "bytes": 298868
+  },
+  {
+   "path": "images/000000151777.jpg",
+   "sha256": "667e1c2ef6ae81dcb3d4e2c2d485cf60cfa27505eb2566363fe7764f5feecd5c",
+   "bytes": 269575
+  },
+  {
+   "path": "images/000000205668.jpg",
+   "sha256": "b5f4d091a6e1c62abde3284720f01ff20e63318b1fbcfb9f66018483e67d0b92",
+   "bytes": 211428
+  },
+  {
+   "path": "images/000000255714.jpg",
+   "sha256": "7b523991fafc71afc65f234193ec3c87a5569fdb3b41f938ff5f621b4ebeaf8b",
+   "bytes": 213087
+  },
+  {
+   "path": "images/000000288848.jpg",
+   "sha256": "8b072f0e9110a1efafc4eee82895c5d5f5c7ffbccaa8920f9aa5a592e2301ee8",
+   "bytes": 195732
+  },
+  {
+   "path": "images/000000372768.jpg",
+   "sha256": "fd5584d302523e186147994026720f56a5bc7a3b7e387814b65b5a34776a5db0",
+   "bytes": 203533
+  },
+  {
+   "path": "images/000000455480.jpg",
+   "sha256": "42170db67bc89ef60a99a9b64c8021291c5cb6a3a919ebc1c9b60dcfb62c0c0d",
+   "bytes": 87234
+  },
+  {
+   "path": "telemetry.json",
+   "sha256": "a4da9ccac8bbca6e5b69672c70f6488b41a3fc7909138deda910d7816bb1bd7d",
+   "bytes": 632976
+  }
+ ]
+}

@@ -1,0 +1,626 @@
+{
+ "schema": "explainer_bundle_images_v1",
+ "followed": "000000114269",
+ "view_rule": "each view: the short side resized to the side with PIL's bicubic filter (the long side to int(side * long / short)), then the centre square (offsets int(round((size - side) / 2))); box_native is that square in the photograph's own pixels. The readings' exports resize the whole image to 480 by 480 instead.",
+ "models": {
+  "dino": "the converted DINO ViT-S/16 (run 2's start): DINO's backbone in the SelfPatch network, without its CLS token and final norm",
+  "selfpatch": "the released DINO+SelfPatch ViT-S/16 checkpoint (the start of runs 1 and 3)",
+  "con1": "run 1 (the rule from the released SelfPatch start), the teacher of its final epoch-20 envelope",
+  "con2": "run 2 (the rule from the DINO start), the teacher of its final epoch-20 envelope",
+  "con3": "run 3 (the rule through the projection head, from the released start), the teacher of its final epoch-20 envelope (the backbone's tokens; the projection head plays no part)"
+ },
+ "token_models": [
+  "dino",
+  "selfpatch",
+  "con1",
+  "con2",
+  "con3"
+ ],
+ "key_models": [
+  "dino",
+  "selfpatch",
+  "con2"
+ ],
+ "images": [
+  {
+   "id": "000000114269",
+   "file": "images/000000114269.jpg",
+   "description": "a dog and a cat by a door",
+   "sha256": "ec62e965a2699adb4d043c0468817062bc7aa5019358fdf8ececd104d3de36e8",
+   "bytes": 121477,
+   "width": 640,
+   "height": 480,
+   "values": 921600,
+   "followed": true,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      298,
+      224
+     ],
+     "crop": [
+      37,
+      0,
+      224,
+      224
+     ],
+     "box_native": [
+      79.4631,
+      0.0,
+      560.5369,
+      480.0
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      640,
+      480
+     ],
+     "crop": [
+      80,
+      0,
+      480,
+      480
+     ],
+     "box_native": [
+      80.0,
+      0.0,
+      560.0,
+      480.0
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000114269_dino_tokens224.json",
+     "selfpatch": "000000114269_selfpatch_tokens224.json",
+     "con1": "000000114269_con1_tokens224.json",
+     "con2": "000000114269_con2_tokens224.json",
+     "con3": "000000114269_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000114269_dino_keys480.json",
+     "selfpatch": "000000114269_selfpatch_keys480.json",
+     "con2": "000000114269_con2_keys480.json"
+    }
+   }
+  },
+  {
+   "id": "000000255714",
+   "file": "images/000000255714.jpg",
+   "description": "a bus",
+   "sha256": "7b523991fafc71afc65f234193ec3c87a5569fdb3b41f938ff5f621b4ebeaf8b",
+   "bytes": 213087,
+   "width": 640,
+   "height": 424,
+   "values": 814080,
+   "followed": false,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      338,
+      224
+     ],
+     "crop": [
+      57,
+      0,
+      224,
+      224
+     ],
+     "box_native": [
+      107.929,
+      0.0,
+      532.071,
+      424.0
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      724,
+      480
+     ],
+     "crop": [
+      122,
+      0,
+      480,
+      480
+     ],
+     "box_native": [
+      107.8453,
+      0.0,
+      532.1547,
+      424.0
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000255714_dino_tokens224.json",
+     "selfpatch": "000000255714_selfpatch_tokens224.json",
+     "con1": "000000255714_con1_tokens224.json",
+     "con2": "000000255714_con2_tokens224.json",
+     "con3": "000000255714_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000255714_dino_keys480.json",
+     "selfpatch": "000000255714_selfpatch_keys480.json",
+     "con2": "000000255714_con2_keys480.json"
+    }
+   }
+  },
+  {
+   "id": "000000106525",
+   "file": "images/000000106525.jpg",
+   "description": "a man with a dog and a parrot",
+   "sha256": "6f0ca7efdb23d7cf5e75ecb32e85a5feb547fedbe6b971e1d9f40cc03cba3c16",
+   "bytes": 91513,
+   "width": 640,
+   "height": 480,
+   "values": 921600,
+   "followed": false,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      298,
+      224
+     ],
+     "crop": [
+      37,
+      0,
+      224,
+      224
+     ],
+     "box_native": [
+      79.4631,
+      0.0,
+      560.5369,
+      480.0
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      640,
+      480
+     ],
+     "crop": [
+      80,
+      0,
+      480,
+      480
+     ],
+     "box_native": [
+      80.0,
+      0.0,
+      560.0,
+      480.0
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000106525_dino_tokens224.json",
+     "selfpatch": "000000106525_selfpatch_tokens224.json",
+     "con1": "000000106525_con1_tokens224.json",
+     "con2": "000000106525_con2_tokens224.json",
+     "con3": "000000106525_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000106525_dino_keys480.json",
+     "selfpatch": "000000106525_selfpatch_keys480.json",
+     "con2": "000000106525_con2_keys480.json"
+    }
+   }
+  },
+  {
+   "id": "000000205668",
+   "file": "images/000000205668.jpg",
+   "description": "a sailboat",
+   "sha256": "b5f4d091a6e1c62abde3284720f01ff20e63318b1fbcfb9f66018483e67d0b92",
+   "bytes": 211428,
+   "width": 640,
+   "height": 427,
+   "values": 819840,
+   "followed": false,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      335,
+      224
+     ],
+     "crop": [
+      56,
+      0,
+      224,
+      224
+     ],
+     "box_native": [
+      106.9851,
+      0.0,
+      534.9254,
+      427.0
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      719,
+      480
+     ],
+     "crop": [
+      120,
+      0,
+      480,
+      480
+     ],
+     "box_native": [
+      106.815,
+      0.0,
+      534.0751,
+      427.0
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000205668_dino_tokens224.json",
+     "selfpatch": "000000205668_selfpatch_tokens224.json",
+     "con1": "000000205668_con1_tokens224.json",
+     "con2": "000000205668_con2_tokens224.json",
+     "con3": "000000205668_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000205668_dino_keys480.json",
+     "selfpatch": "000000205668_selfpatch_keys480.json",
+     "con2": "000000205668_con2_keys480.json"
+    }
+   }
+  },
+  {
+   "id": "000000372768",
+   "file": "images/000000372768.jpg",
+   "description": "a person eating",
+   "sha256": "fd5584d302523e186147994026720f56a5bc7a3b7e387814b65b5a34776a5db0",
+   "bytes": 203533,
+   "width": 480,
+   "height": 640,
+   "values": 921600,
+   "followed": false,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      224,
+      298
+     ],
+     "crop": [
+      0,
+      37,
+      224,
+      224
+     ],
+     "box_native": [
+      0.0,
+      79.4631,
+      480.0,
+      560.5369
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      480,
+      640
+     ],
+     "crop": [
+      0,
+      80,
+      480,
+      480
+     ],
+     "box_native": [
+      0.0,
+      80.0,
+      480.0,
+      560.0
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000372768_dino_tokens224.json",
+     "selfpatch": "000000372768_selfpatch_tokens224.json",
+     "con1": "000000372768_con1_tokens224.json",
+     "con2": "000000372768_con2_tokens224.json",
+     "con3": "000000372768_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000372768_dino_keys480.json",
+     "selfpatch": "000000372768_selfpatch_keys480.json",
+     "con2": "000000372768_con2_keys480.json"
+    }
+   }
+  },
+  {
+   "id": "000000288848",
+   "file": "images/000000288848.jpg",
+   "description": "a train",
+   "sha256": "8b072f0e9110a1efafc4eee82895c5d5f5c7ffbccaa8920f9aa5a592e2301ee8",
+   "bytes": 195732,
+   "width": 640,
+   "height": 411,
+   "values": 789120,
+   "followed": false,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      348,
+      224
+     ],
+     "crop": [
+      62,
+      0,
+      224,
+      224
+     ],
+     "box_native": [
+      114.023,
+      0.0,
+      525.977,
+      411.0
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      747,
+      480
+     ],
+     "crop": [
+      134,
+      0,
+      480,
+      480
+     ],
+     "box_native": [
+      114.8059,
+      0.0,
+      526.0509,
+      411.0
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000288848_dino_tokens224.json",
+     "selfpatch": "000000288848_selfpatch_tokens224.json",
+     "con1": "000000288848_con1_tokens224.json",
+     "con2": "000000288848_con2_tokens224.json",
+     "con3": "000000288848_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000288848_dino_keys480.json",
+     "selfpatch": "000000288848_selfpatch_keys480.json",
+     "con2": "000000288848_con2_keys480.json"
+    }
+   }
+  },
+  {
+   "id": "000000455480",
+   "file": "images/000000455480.jpg",
+   "description": "a boat at a dock",
+   "sha256": "42170db67bc89ef60a99a9b64c8021291c5cb6a3a919ebc1c9b60dcfb62c0c0d",
+   "bytes": 87234,
+   "width": 375,
+   "height": 500,
+   "values": 562500,
+   "followed": false,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      224,
+      298
+     ],
+     "crop": [
+      0,
+      37,
+      224,
+      224
+     ],
+     "box_native": [
+      0.0,
+      62.0805,
+      375.0,
+      437.9195
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      480,
+      640
+     ],
+     "crop": [
+      0,
+      80,
+      480,
+      480
+     ],
+     "box_native": [
+      0.0,
+      62.5,
+      375.0,
+      437.5
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000455480_dino_tokens224.json",
+     "selfpatch": "000000455480_selfpatch_tokens224.json",
+     "con1": "000000455480_con1_tokens224.json",
+     "con2": "000000455480_con2_tokens224.json",
+     "con3": "000000455480_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000455480_dino_keys480.json",
+     "selfpatch": "000000455480_selfpatch_keys480.json",
+     "con2": "000000455480_con2_keys480.json"
+    }
+   }
+  },
+  {
+   "id": "000000151777",
+   "file": "images/000000151777.jpg",
+   "description": "children on a pitch",
+   "sha256": "667e1c2ef6ae81dcb3d4e2c2d485cf60cfa27505eb2566363fe7764f5feecd5c",
+   "bytes": 269575,
+   "width": 640,
+   "height": 480,
+   "values": 921600,
+   "followed": false,
+   "views": {
+    "224": {
+     "side": 224,
+     "resize": [
+      298,
+      224
+     ],
+     "crop": [
+      37,
+      0,
+      224,
+      224
+     ],
+     "box_native": [
+      79.4631,
+      0.0,
+      560.5369,
+      480.0
+     ],
+     "grid": [
+      14,
+      14
+     ],
+     "tokens": 196
+    },
+    "480": {
+     "side": 480,
+     "resize": [
+      640,
+      480
+     ],
+     "crop": [
+      80,
+      0,
+      480,
+      480
+     ],
+     "box_native": [
+      80.0,
+      0.0,
+      560.0,
+      480.0
+     ],
+     "grid": [
+      30,
+      30
+     ],
+     "tokens": 900
+    }
+   },
+   "files": {
+    "tokens224": {
+     "dino": "000000151777_dino_tokens224.json",
+     "selfpatch": "000000151777_selfpatch_tokens224.json",
+     "con1": "000000151777_con1_tokens224.json",
+     "con2": "000000151777_con2_tokens224.json",
+     "con3": "000000151777_con3_tokens224.json"
+    },
+    "keys480": {
+     "dino": "000000151777_dino_keys480.json",
+     "selfpatch": "000000151777_selfpatch_keys480.json",
+     "con2": "000000151777_con2_keys480.json"
+    }
+   }
+  }
+ ]
+}

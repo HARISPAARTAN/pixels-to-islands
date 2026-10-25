@@ -1,0 +1,2628 @@
+/* ==========================================================================
+   Pixels to Islands: the whole stylesheet, shared by the nine pages.
+
+   Ported from docs/research/explainer_2026-09-28/src/styles.css. Its tokens and both
+   theme blocks are kept exactly (spec section 11).
+
+   Order: 1 tokens (light on bare :root, then the two dark blocks), 2 base and
+   typography, 3 page frame (wrapper, top bar of nine links, progress line), 4 prose
+   (parts, sections, lists, figures, tables, code), 5 statement kinds (fact / toy / plan,
+   kept for the lab runtime) and the glossary popover, 6 lab panels and their controls,
+   7 image chooser and lab errors, 8 utilities, 9 reduced motion and forced colours,
+   10 the course's own components (marks, why cards, equation walks, scenes, page
+   furniture), 11 the ported labs' styles (Lab M and Lab N).
+
+   Every colour comes from a token. Canvases read the same tokens through
+   Core.theme(), so the page and the drawings change theme together.
+   Role colours carry one meaning everywhere: green student, blue teacher,
+   orange positive, purple negative, grey ignored. The four marks (section 10)
+   use role colours as a second cue only: the line style and the word tell them
+   apart without colour. Page chrome (buttons, focus, links) uses only the
+   neutral tokens.
+   See README.md (next to design.md) for the class names authors use.
+   ========================================================================== */
+
+/* 1. Tokens ---------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  /* ground and text */
+  --paper: #EEF1F4;
+  --ink: #14181D;
+  --muted: #4C5661;
+  --line: #C9D1DA;
+
+  /* roles: the same meaning in every lab */
+  --student: #2A7F62;
+  --teacher: #1F6FB2;
+  --positive: #E4572E;
+  --negative: #7A3E9D;
+  --ignored: #9AA5B1;
+
+  /* derived neutrals: chrome only, never data */
+  --surface: #F8FAFB;
+  --sunken: #E2E7EC;
+  --control: #7D8995;
+  --hatch: #C9D1DA;
+  --focus: #14181D;
+  --on-role: #FFFFFF;
+  --on-ink: #EEF1F4;
+
+  /* type */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-body: "Source Sans 3", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --step--2: 0.75rem;
+  --step--1: 0.875rem;
+  --step-0: clamp(1.0625rem, 1rem + 0.25vw, 1.125rem);
+  --step-1: 1.25rem;
+  --step-2: 1.5rem;
+  --step-3: clamp(1.85rem, 1.45rem + 1.9vw, 2.6rem);
+  --step-4: clamp(2.2rem, 1.6rem + 2.8vw, 3.4rem);
+
+  /* layout */
+  --measure: 66ch;
+  --wide: 1040px;
+  --strip: 280px;
+  --gutter: 16px;
+  --topbar-h: 3.25rem; /* boot.js replaces this with the measured height */
+  --radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #0F1418;
+    --ink: #ECEFF3;
+    --muted: #A6B0BB;
+    --line: #2A343E;
+    --student: #43B18D;
+    --teacher: #579FDB;
+    --positive: #F17855;
+    --negative: #B47DD4;
+    --ignored: #6A7581;
+    --surface: #141A1F;
+    --sunken: #1C242B;
+    --control: #6F7B87;
+    --hatch: #2F3A45;
+    --focus: #ECEFF3;
+    --on-role: #0F1418;
+    --on-ink: #0F1418;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0F1418;
+  --ink: #ECEFF3;
+  --muted: #A6B0BB;
+  --line: #2A343E;
+  --student: #43B18D;
+  --teacher: #579FDB;
+  --positive: #F17855;
+  --negative: #B47DD4;
+  --ignored: #6A7581;
+  --surface: #141A1F;
+  --sunken: #1C242B;
+  --control: #6F7B87;
+  --hatch: #2F3A45;
+  --focus: #ECEFF3;
+  --on-role: #0F1418;
+  --on-ink: #0F1418;
+}
+
+/* 2. Base and typography --------------------------------------------------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* anchor jumps land below the sticky top bar */
+  scroll-padding-top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px) + 12px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  font-kerning: normal;
+  overflow-wrap: break-word;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  margin: 0;
+  line-height: 1.2;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+:where(p, li, dd, figcaption) { text-wrap: pretty; }
+
+:where(.page) h1 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  font-size: var(--step-3);
+  line-height: 1.08;
+}
+
+:where(.page) h2 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--step-2);
+  letter-spacing: -0.005em;
+  margin-block: 2.75rem 0.75rem;
+}
+
+:where(.page) h3 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--step-1);
+  margin-block: 2rem 0.6rem;
+}
+
+:where(.page) h4 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--step-0);
+  margin-block: 1.5rem 0.4rem;
+}
+
+a {
+  color: var(--ink);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--control);
+  text-underline-offset: 0.18em;
+}
+
+a:hover { text-decoration-color: var(--ink); }
+
+:where(a, button, input, select, textarea, summary, canvas, svg, [tabindex], dfn[data-term]):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* headings and scroll boxes that boot.js focuses for screen readers */
+[data-boot-focus]:focus:not(:focus-visible),
+[data-boot-scroll]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+strong, b { font-weight: 700; }
+
+:where(.page) :where(p, ul, ol, dl, blockquote, pre, table, details, .scroll-x, .eq, .stmt) {
+  margin-block: 0 1rem;
+}
+
+:where(.page) :is(ul, ol) { padding-inline-start: 1.3em; }
+:where(.page) li + li { margin-block-start: 0.3rem; }
+:where(.page) li > :is(ul, ol) { margin-block: 0.3rem 0; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin-block: 2.5rem;
+}
+
+blockquote {
+  margin-inline: 0;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid var(--line);
+  color: var(--muted);
+}
+
+:where(code, kbd, samp) {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-variant-numeric: tabular-nums;
+  background: var(--sunken);
+  border-radius: 3px;
+  padding: 0.08em 0.32em;
+  overflow-wrap: anywhere;
+}
+
+kbd {
+  background: var(--surface);
+  border: 1px solid var(--control);
+  border-bottom-width: 2px;
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  line-height: 1.5;
+  background: var(--sunken);
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  overflow-wrap: normal;
+}
+
+var { font-style: italic; }
+
+img, video { max-width: 100%; height: auto; }
+
+/* 3. Page frame ------------------------------------------------------------ */
+
+/* The one wrapper that owns the 16 px side gutter. It is also the size
+   container that lets a lab panel break out of the reading column. The
+   horizontal clip is a safety net: a stray wide element can never make the
+   page itself scroll sideways (stages and .scroll-x boxes scroll inside). */
+.page {
+  box-sizing: border-box;
+  padding-inline: var(--gutter);
+  padding-block: 2rem 5rem;
+  container-type: inline-size;
+  overflow-x: clip;
+}
+
+/* the reading column: every direct child of the wrapper except a lab
+   (and a top bar, if one was written inside the wrapper) */
+:where(.page) > :not(.lab, .topbar) {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* sticky top bar: the nine pages as links, and a thin progress line for the page being read */
+.topbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner {
+  box-sizing: border-box;
+  max-width: calc(var(--wide) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-title {
+  flex: 0 0 auto;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* The links stand at the end of the bar. If they ever do not fit, they scroll inside the bar and the page does not. */
+.topbar-parts {
+  display: flex;
+  gap: 0.3rem;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.topbar-parts::-webkit-scrollbar { display: none; }
+.topbar-parts > li { flex: none; margin: 0; }
+
+.topbar-part {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  box-sizing: border-box;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.65rem;
+  font: 600 var(--step--1)/1.1 var(--font-body);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.topbar-part:hover {
+  color: var(--ink);
+  background: var(--sunken);
+}
+
+.topbar-part[aria-current]:not([aria-current="false"]) {
+  color: var(--ink);
+  background: var(--sunken);
+  border-color: var(--line);
+}
+
+.topbar-num {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.progress {
+  height: 2px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* From 1100 px the title and every label fit. Below that the title goes; below 880 px only the page being read shows
+   its label; below 560 px the links are the nine numbers, shared out evenly (each keeps its aria-label). */
+@media (max-width: 1099.98px) {
+  .topbar-title { display: none; }
+}
+
+@media (max-width: 879.98px) {
+  .topbar-part .topbar-label { display: none; }
+  .topbar-part[aria-current]:not([aria-current="false"]) .topbar-label { display: inline; }
+}
+
+@media (max-width: 559.98px) {
+  .topbar-parts {
+    flex: 1 1 auto;
+    margin-inline-start: 0;
+  }
+  .topbar-parts > li { flex: 1 1 0; min-width: 0; }
+  .topbar-part {
+    width: 100%;
+    padding-inline: 0.2rem;
+  }
+  .topbar-part[aria-current]:not([aria-current="false"]) .topbar-label { display: none; }
+}
+
+/* 4. Prose ----------------------------------------------------------------- */
+
+.prologue { padding-block: 1rem 0.5rem; }
+
+.page-title {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: var(--step-4);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  margin-block: 0 1rem;
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.5;
+}
+
+.eyebrow,
+.part-kicker,
+.lab-kicker {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.part {
+  margin-block-start: 4.5rem;
+  padding-block-start: 2.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.part-head,
+:where(.part) > header {
+  display: grid;
+  gap: 0.35rem;
+  margin-block-end: 1.75rem;
+}
+
+.part-title,
+:where(.part-head, .part > header) :is(h1, h2) {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: var(--step-3);
+  line-height: 1.08;
+  letter-spacing: -0.012em;
+  margin: 0;
+}
+
+.part-intro {
+  font-size: var(--step-1);
+  line-height: 1.5;
+}
+
+.sec { margin-block-start: 3.25rem; }
+:where(.part-head, .part > header) + .sec { margin-block-start: 2rem; }
+
+.sec-title,
+:where(.sec) > :is(h2, h3):first-child {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--step-2);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  margin-block: 0 0.75rem;
+}
+
+.sec-num {
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  margin-inline-end: 0.6ch;
+}
+
+/* the outcomes list: an empty square per outcome, no numbering */
+.outcomes {
+  list-style: none;
+  padding-inline-start: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.outcomes > li {
+  position: relative;
+  margin: 0;
+  padding-inline-start: 1.9rem;
+}
+
+.outcomes > li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0.1rem;
+  top: 0.35em;
+  width: 0.85em;
+  height: 0.85em;
+  border: 1.5px solid var(--muted);
+  border-radius: 2px;
+}
+
+.note {
+  font-size: var(--step--1);
+  line-height: 1.5;
+  color: var(--muted);
+  border-inline-start: 1px solid var(--line);
+  padding-inline-start: 0.9rem;
+}
+
+.eq {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+  background: var(--sunken);
+  border-radius: 4px;
+  padding: 0.6rem 0.9rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* a closed note for implementers inside the copy: the running text says
+   what a newcomer needs, the note keeps the engineering detail */
+details.impl-note {
+  margin-block: 0.75rem;
+  padding: 0.35rem 0 0.35rem 0.85rem;
+  border-inline-start: 3px solid var(--line);
+  font-size: 0.92em;
+  color: var(--muted);
+}
+details.impl-note > summary { color: var(--ink); }
+details.impl-note[open] > summary { margin-bottom: 0.4rem; }
+details.impl-note > p { margin: 0; }
+
+/* figures */
+:where(.page) figure {
+  margin-inline: 0;
+  margin-block: 1.5rem;
+}
+
+figure > :is(img, canvas) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+figure > svg { display: block; max-width: 100%; }
+figure > svg[viewBox] { height: auto; }
+
+figcaption {
+  font-size: var(--step--1);
+  line-height: 1.45;
+  color: var(--muted);
+  margin-block-start: 0.5rem;
+}
+
+figcaption strong { color: var(--ink); }
+
+/* tables: always inside .scroll-x so only the table scrolls sideways */
+.scroll-x {
+  overflow-x: auto;
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+
+:where(.page) table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1.4;
+}
+
+:where(.page) :is(th, td) {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  text-align: start;
+  vertical-align: top;
+}
+
+:where(.page) :is(th, td):first-child { padding-inline-start: 0; }
+:where(.page) :is(th, td):last-child { padding-inline-end: 0; }
+
+:where(.page) thead th {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1.5px solid var(--ink);
+  white-space: nowrap;
+}
+
+:where(.page) tfoot :is(th, td) {
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 0;
+  font-weight: 700;
+}
+
+:where(.page) caption {
+  caption-side: top;
+  text-align: start;
+  font-weight: 600;
+  padding-block-end: 0.4rem;
+}
+
+.num,
+:where(.page) :is(td, th).num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* sources and glossary at the end of the page */
+.sources { font-size: var(--step--1); }
+.sources li { overflow-wrap: anywhere; }
+
+dl#glossary,
+dl.glossary {
+  display: grid;
+  grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr);
+  gap: 0.55rem 1.25rem;
+}
+
+:is(dl#glossary, dl.glossary) dt {
+  grid-column: 1;
+  font-weight: 700;
+}
+
+:is(dl#glossary, dl.glossary) dd {
+  grid-column: 2;
+  margin: 0;
+}
+
+:is(#glossary, .glossary) :is(dt, li):target,
+:is(#glossary, .glossary) dt:target + dd {
+  background: var(--sunken);
+  border-radius: 3px;
+}
+
+ul#glossary,
+ul.glossary {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+@media (max-width: 560px) {
+  dl#glossary,
+  dl.glossary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+  :is(dl#glossary, dl.glossary) :is(dt, dd) { grid-column: 1; }
+  :is(dl#glossary, dl.glossary) dd { margin-block-end: 0.8rem; }
+}
+
+/* 5. Statement kinds and the glossary -------------------------------------- */
+
+/* A fact: a sourced number or claim. Dotted underline; boot.js copies
+   data-source into the hover title and shows it in a popover on tap. */
+.fact {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--muted);
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.22em;
+  cursor: help;
+}
+
+.fact:hover,
+.fact.is-open { text-decoration-color: var(--ink); }
+.fact.is-open { background: var(--sunken); border-radius: 2px; }
+
+/* the visible source tag that follows a fact, e.g. [DINO 3.1] */
+.src {
+  font-family: var(--font-mono);
+  font-size: 0.74em;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+/* boot.js makes a source tag a button that lists the sources of its
+   statement, so the sources can be read from the keyboard too */
+cite.src[role="button"] { cursor: pointer; border-radius: 2px; }
+cite.src[role="button"]:hover,
+cite.src[role="button"].is-open { color: var(--ink); text-decoration: underline dotted; }
+cite.src[role="button"].is-open { background: var(--sunken); }
+
+/* The three badges. Line style tells them apart without colour:
+   solid = fact, dashed and hatched = toy, dotted = plan. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.2em 0.5em;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: 0.1em;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  text-decoration: none;
+  cursor: default;
+}
+
+.badge.fact { border-style: solid; }
+
+.badge.toy {
+  border-style: dashed;
+  border-color: var(--muted);
+  background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--hatch) 5px 6px);
+}
+
+.badge.plan {
+  border-style: dotted;
+  border-width: 1.5px;
+  background: var(--sunken);
+}
+
+/* A statement block: a paragraph or group of them marked as one kind. */
+.stmt {
+  display: grid;
+  gap: 0.4rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid var(--ink);
+}
+
+.stmt[data-kind="toy"] {
+  border-inline-start-style: dashed;
+  border-inline-start-color: var(--muted);
+}
+
+.stmt[data-kind="plan"] { border-inline-start-style: dotted; }
+.stmt > .badge { justify-self: start; }
+.stmt > :where(p, ul, ol) { margin: 0; }
+
+/* glossary terms in the text: italic, underlined, open a popover */
+dfn { font-style: italic; }
+
+dfn[data-term] {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--control);
+  text-underline-offset: 0.2em;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+dfn[data-term]:hover { text-decoration-color: var(--ink); }
+
+dfn[data-term][aria-expanded="true"],
+dfn[data-term].is-open {
+  background: var(--sunken);
+  text-decoration-color: var(--ink);
+}
+
+/* a term with no glossary entry: visible so a reviewer catches it */
+dfn.gloss-missing { text-decoration-style: wavy; }
+
+:is(#glossary, .glossary) dfn[data-term] {
+  font-style: normal;
+  text-decoration: none;
+  cursor: auto;
+}
+
+/* the popover shared by glossary terms and fact sources */
+.gloss-pop {
+  position: absolute;
+  z-index: 60;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(24rem, calc(100vw - 2 * var(--gutter)));
+  padding: 0.7rem 2.75rem 0.8rem 0.95rem;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--control);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  line-height: 1.5;
+  text-align: start;
+  overflow-wrap: break-word;
+}
+
+.gloss-pop-kind {
+  margin: 0 0 0.1rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.gloss-pop-term {
+  margin: 0 0 0.3rem;
+  font-weight: 700;
+  font-size: var(--step-0);
+  line-height: 1.3;
+}
+
+.gloss-pop-body > * { margin: 0 0 0.5rem; }
+.gloss-pop-body > :last-child { margin-bottom: 0; }
+
+.gloss-pop-foot {
+  margin: 0.55rem 0 0;
+  font-size: var(--step--2);
+  color: var(--muted);
+}
+
+/* the list of sources a source tag opens */
+.gloss-pop-list {
+  max-height: min(50vh, 24rem);
+  margin: 0;
+  padding-inline-start: 1.1em;
+  overflow-y: auto;
+}
+.gloss-pop-list > li { margin: 0 0 0.45em; overflow-wrap: anywhere; }
+.gloss-pop-list > li:last-child { margin-bottom: 0; }
+.gloss-pop-list code { font-size: 0.85em; }
+
+.gloss-pop .gloss-pop-close {
+  position: absolute;
+  top: 0.35rem;
+  inset-inline-end: 0.35rem;
+  width: 2rem;
+  height: 2rem;
+  min-height: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font: 400 1.25rem/1 var(--font-body);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.gloss-pop .gloss-pop-close:hover {
+  color: var(--ink);
+  background: var(--sunken);
+}
+
+/* 6. Lab panels ------------------------------------------------------------ */
+
+/* A lab breaks out of the reading column to at most 1040 px, centred on the
+   page, whichever column holds it. --lab-w is the panel's outer width;
+   100cqi is the width inside the .page gutter. */
+.lab {
+  --lab-w: min(var(--wide), calc(100vw - 3 * var(--gutter)));
+  box-sizing: border-box;
+  width: var(--lab-w);
+  max-width: none;
+  margin-inline: calc((100% - var(--lab-w)) / 2);
+  margin-block: 2rem 2.5rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+@supports (width: 1cqi) {
+  .lab { --lab-w: min(var(--wide), 100cqi); }
+}
+
+/* spacing inside a lab comes from gaps, so flow margins are reset */
+.lab :where(p, ul, ol, dl, figure, table, pre, blockquote, .eq) { margin-block: 0 0.6rem; }
+.lab :where(p, ul, ol, dl, figure, table, pre, blockquote, .eq):last-child { margin-block-end: 0; }
+.lab :where(.lab-head, .lab-meta, header, .lab-body, .lab-stage, .lab-controls, .stage-row, .stage-cell, .control, .control-group, .image-chooser) > * { margin-block: 0; }
+
+/* the header: kicker (Lab A), name, one-sentence question, toy badge */
+.lab-head,
+:where(.lab) > header {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem 1.25rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.lab-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+
+.lab-name,
+:where(.lab > header) :is(h2, h3, h4, h5) {
+  margin: 0;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 1.35rem;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+}
+
+.lab-question,
+:where(.lab > header) p:not([class]) {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--ink);
+}
+
+:where(.lab-head, .lab > header) > .badge { justify-self: start; }
+
+/* the body: control strip (left, 280 px) and stage (right); anything else
+   (a caption, a note, an error) spans both columns */
+.lab-body {
+  display: grid;
+  grid-template-columns: var(--strip) minmax(0, 1fr);
+  grid-auto-flow: row dense;
+}
+
+.lab-body > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.lab-body > .lab-controls { grid-column: 1; }
+.lab-body > .lab-stage { grid-column: 2; }
+
+.lab-body:not(:has(> .lab-controls)) > .lab-stage,
+.lab-body:not(:has(> .lab-stage)) > .lab-controls {
+  grid-column: 1 / -1;
+}
+
+.lab-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
+  border-inline-end: 1px solid var(--line);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.lab-body:not(:has(> .lab-stage)) > .lab-controls { border-inline-end: 0; }
+
+/* the stage may scroll sideways; the page never does */
+.lab-stage {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.stage-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem 1rem;
+  min-width: 0;
+}
+
+.stage-cell {
+  display: grid;
+  justify-items: start;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.stage-label {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* canvases scale down to fit; map pointer positions with
+   getBoundingClientRect. Add .no-scale to keep the drawn size and let the
+   stage scroll instead. */
+.lab canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  touch-action: manipulation;
+}
+
+.lab canvas.no-scale { max-width: none; }
+.lab svg[viewBox]:not(.no-scale) { max-width: 100%; height: auto; }
+.pixelated,
+.pixelated canvas { image-rendering: pixelated; }
+/* A drag surface keeps the touch to itself, so the page does not scroll under a finger that drags a point. A canvas in
+   a lab needs the second selector: ".lab canvas" above (0,1,1) would beat ".drag-surface" alone (0,1,0), and
+   ".lab canvas.drag-surface" (0,2,1) beats it. */
+.drag-surface,
+.lab canvas.drag-surface { touch-action: none; }
+
+/* "What you are looking at" and "Real model versus this toy" */
+.lab-caption,
+.lab-note {
+  margin: 0;
+  padding-inline: 1.25rem;
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+
+.lab-caption {
+  padding-block: 0.75rem 0.35rem;
+  border-top: 1px solid var(--line);
+}
+
+.lab-note {
+  padding-block: 0.35rem 1rem;
+  color: var(--muted);
+}
+
+:not(.lab-caption) + .lab-note {
+  padding-block-start: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+:is(.lab-caption, .lab-note) > strong:first-child { color: var(--ink); }
+
+/* controls in the strip ---------------------------------------------------- */
+
+.control-group {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.control-group-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* one control: label and live value on a line, the input below it */
+.control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+
+.control > :where(label, .control-label):first-child {
+  grid-column: 1;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.control > :where(output, .value) {
+  grid-column: 2;
+  font-size: var(--step--1);
+  white-space: nowrap;
+}
+
+.control > :not(:first-child):not(output):not(.value) { grid-column: 1 / -1; }
+
+.control-hint {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.lab input[type="range"],
+input[type="range"].range {
+  width: 100%;
+  min-width: 0;
+  height: 1.6rem;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--role, var(--ink));
+  cursor: pointer;
+}
+
+.lab :is(input[type="checkbox"], input[type="radio"]) {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: var(--role, var(--ink));
+}
+
+/* a checkbox with its words: <label class="toggle"><input type="checkbox"> Flip</label> */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.toggle-row,
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.toggle-row { column-gap: 1rem; }
+
+/* buttons: every button inside the page, and anything with .btn */
+:where(.lab, .page) button,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.8rem;
+  font: 600 var(--step--1)/1.2 var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--control);
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+:where(.lab, .page) button:where(:hover:not(:disabled)),
+.btn:where(:hover) {
+  background: var(--sunken);
+}
+
+/* the chosen option: ink fill (never a role colour) */
+:where(.lab, .page) button:where([aria-pressed="true"], [aria-selected="true"]),
+.btn:where([aria-pressed="true"], [aria-selected="true"], .is-active) {
+  color: var(--on-ink);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+:where(.lab, .page) button:where(:disabled),
+.btn:where(:disabled, [aria-disabled="true"]) {
+  color: var(--muted);
+  background: transparent;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  color: var(--on-ink);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.btn-primary:where(:hover:not(:disabled)) {
+  background: var(--muted);
+  border-color: var(--muted);
+}
+
+:where(.lab, .page) button.plain {
+  min-height: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+:where(.lab, .page) select {
+  max-width: 100%;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.5rem;
+  font: 600 var(--step--1)/1.2 var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--control);
+  border-radius: 5px;
+}
+
+/* several choices, one chosen: radios drawn as small buttons
+   <div class="segmented" role="radiogroup" aria-label="Rule">
+     <label><input type="radio" name="rule" id="lab-i-rule-row" checked><span>row</span></label> ... */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.segmented > label {
+  position: relative;
+  display: inline-flex;
+}
+
+.segmented > label > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.1rem;
+  padding: 0.3rem 0.7rem;
+  font-size: var(--step--1);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--control);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.segmented > label:hover > input:not(:checked):not(:disabled) + span { background: var(--sunken); }
+
+.segmented > label > input:checked + span {
+  color: var(--on-ink);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.segmented > label > input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.segmented > label > input:disabled + span {
+  color: var(--muted);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+/* numbers the reader types (Lab C's q, k, v tables) */
+:where(.lab, .page) :is(input[type="number"], input[type="text"]) {
+  min-width: 0;
+  padding: 0.25rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--control);
+  border-radius: 4px;
+}
+
+:where(.lab, .page) input[type="number"] {
+  width: 7ch;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.matrix { border-collapse: collapse; }
+.matrix :is(th, td) { padding: 0.15rem 0.3rem; border: 0; text-align: center; }
+.matrix th { font-family: var(--font-mono); font-size: var(--step--2); color: var(--muted); font-weight: 500; }
+
+/* readouts: numbers that change as the reader acts ------------------------- */
+
+output,
+.value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.readout {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+dl.readout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.15rem 0.9rem;
+}
+
+dl.readout dt { color: var(--muted); }
+dl.readout dd { margin: 0; overflow-wrap: anywhere; }
+
+/* a tensor shape such as B x 196 x 384 */
+.shape {
+  padding: 0.05em 0.35em;
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  background: var(--sunken);
+  border-radius: 3px;
+}
+
+/* role colours: set --role once, every mark below reads it */
+.role-student { --role: var(--student); }
+.role-teacher { --role: var(--teacher); }
+.role-positive { --role: var(--positive); }
+.role-negative { --role: var(--negative); }
+.role-ignored { --role: var(--ignored); }
+
+.swatch {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-inline-end: 0.35em;
+  vertical-align: -0.06em;
+  background: var(--role, var(--ink));
+  border-radius: 2px;
+}
+
+/* coloured text only at large or bold sizes; small text stays ink */
+.text-role {
+  color: var(--role, var(--ink));
+  font-weight: 700;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+.legend > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin: 0;
+}
+
+.legend > *::before {
+  content: "";
+  flex: none;
+  width: 0.8em;
+  height: 0.8em;
+  background: var(--role, var(--ink));
+  border-radius: 2px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.1em 0.5em;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--role, var(--line));
+  border-radius: 3px;
+}
+
+.chip.filled {
+  color: var(--on-role);
+  background: var(--role, var(--ink));
+  border-color: transparent;
+}
+
+/* SVG charts: text and rules from the tokens */
+svg.chart {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.chart text {
+  fill: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart .title { fill: var(--ink); font-weight: 600; }
+.chart .grid :is(line, path) { fill: none; stroke: var(--line); stroke-width: 1; }
+.chart .axis :is(line, path) { fill: none; stroke: var(--muted); stroke-width: 1; }
+
+.chart .series {
+  fill: none;
+  stroke: var(--role, var(--ink));
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart .area { fill: var(--role, var(--ink)); fill-opacity: .14; stroke: none; }
+.chart :is(.bar, .dot) { fill: var(--role, var(--ink)); }
+.chart .band { fill: var(--sunken); }
+
+/* Lab H: where you are in the nine stages */
+.step-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-dots > * {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  margin: 0;
+  padding-inline: 0.3rem;
+  font: 500 var(--step--2)/1 var(--font-mono);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+.step-dots > .is-done {
+  color: var(--ink);
+  border-color: var(--control);
+}
+
+.step-dots > :is([aria-current="step"], .is-current) {
+  font-weight: 700;
+  color: var(--on-ink);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+/* one column below 760 px: the strip sits above the stage */
+@media (max-width: 759.98px) {
+  .lab {
+    margin-block: 1.5rem 2rem;
+    border-radius: 6px;
+  }
+
+  .lab-body { grid-template-columns: minmax(0, 1fr); }
+
+  .lab-body > .lab-controls,
+  .lab-body > .lab-stage { grid-column: 1; }
+
+  .lab-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.5rem), 1fr));
+    gap: 0.9rem 1.25rem;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lab-body:not(:has(> .lab-stage)) > .lab-controls { border-bottom: 0; }
+
+  .lab-head,
+  :where(.lab) > header,
+  .lab-controls,
+  .lab-stage,
+  .lab-caption,
+  .lab-note { padding-inline: 1rem; }
+}
+
+/* fingers need bigger targets */
+@media (pointer: coarse) {
+  :where(.lab, .page) button,
+  .btn,
+  .topbar-part,
+  .segmented > label > span,
+  :where(.lab, .page) select { min-height: 44px; }
+
+  .toggle { min-height: 44px; }
+  .lab input[type="range"] { height: 2.25rem; }
+}
+
+/* 7. Image chooser and lab errors ------------------------------------------ */
+
+.image-chooser {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.image-chooser[aria-busy="true"] { cursor: progress; }
+
+.image-chooser-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.file-btn { position: relative; }
+
+/* while a picture is being read, both chooser buttons look unavailable */
+.file-btn:has(> input:disabled) {
+  color: var(--muted);
+  background: transparent;
+  border-style: dashed;
+  cursor: progress;
+}
+
+.file-btn:has(> input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@supports not selector(:has(*)) {
+  .file-btn:focus-within {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+.chooser-status {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.4;
+  overflow-wrap: anywhere; /* long file names wrap inside the strip */
+}
+
+.chooser-status.is-error {
+  font-weight: 600;
+  padding-inline-start: 0.6rem;
+  border-inline-start: 2px solid var(--ink);
+}
+
+.chooser-note {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* shown in place of a widget that threw while starting */
+.lab-error {
+  grid-column: 1 / -1;
+  margin: 1rem 1.25rem 1.25rem;
+  padding: 0.9rem 1rem;
+  font-size: var(--step--1);
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--sunken);
+  border: 1px dashed var(--control);
+  border-radius: 5px;
+}
+
+.lab-error p { margin: 0 0 0.4rem; }
+
+.lab-error .lab-error-title {
+  margin: 0 0 0.25rem;
+  font-size: var(--step-0);
+  font-weight: 700;
+}
+
+.lab-error details {
+  margin-block-start: 0.4rem;
+  color: var(--muted);
+}
+
+.lab-error code {
+  display: block;
+  margin-block-start: 0.35rem;
+  white-space: pre-wrap;
+}
+
+/* 8. Utilities ------------------------------------------------------------- */
+
+/* The hidden attribute always hides. The browser's own rule for it is weaker than any author rule that sets display
+   (".lab-controls { display: flex }", ".lab-stage { display: grid }", ".control { display: grid }"), so without this
+   line hidden does nothing on such an element. The rules of the form "x[hidden] { display: none }" further down are
+   then redundant but harmless. */
+[hidden] { display: none !important; }
+
+.visually-hidden,
+.segmented > label > input,
+.file-btn > input[type="file"] {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-mono); }
+.tnum { font-variant-numeric: tabular-nums; }
+.nowrap { white-space: nowrap; }
+.small { font-size: var(--step--1); }
+
+@media (pointer: coarse) {
+  .gloss-pop { padding-inline-end: 3.4rem; }
+  .gloss-pop .gloss-pop-close {
+    width: 44px;
+    height: 44px;
+    top: 0.15rem;
+    inset-inline-end: 0.15rem;
+  }
+}
+
+/* 9. Reduced motion and forced colours ------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .progress-bar { background: CanvasText; }
+
+  .lab,
+  .gloss-pop,
+  .badge,
+  .chip,
+  .lab-error { border-color: CanvasText; }
+
+  .segmented > label > input:checked + span,
+  :where(.lab, .page) button[aria-pressed="true"],
+  .btn.is-active,
+  .topbar-part[aria-current]:not([aria-current="false"]) {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+  }
+
+  .swatch,
+  .legend > *::before { forced-color-adjust: none; }
+}
+
+/* 10. The course's own components ------------------------------------------ */
+
+/* A page is one part: the first part on a page starts at the top, not after a rule. */
+.page > .part:first-child {
+  margin-block-start: 0;
+  padding-block-start: 0;
+  border-top: 0;
+}
+
+/* The "Assumes: ... Gives: ..." line under every numbered section title. */
+.sec-meta {
+  margin-block: 0 1rem;
+  font-size: var(--step--1);
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.sec-meta strong { color: var(--ink); font-weight: 600; }
+
+/* a colour key written straight in a section (labs and figures keep the compact .legend) */
+.sec > .legend { margin-block: 0 1rem; }
+
+sub, sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+/* Formulas are plain HTML: <var>, <sub>, <sup> and this class. No library draws them. */
+.formula {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The four marks. Each statement of the course wears one: Fact, Real, Toy or Reading.
+   <span class="mark mark-fact" data-source="DINO §3.1">Fact</span>
+   <span class="mark mark-real" data-bundle="followed.json#anchor_shares">Real</span>
+   <span class="mark mark-toy">Toy</span>
+   <span class="mark mark-reading" data-source="reading 2026-10-11">Reading</span>
+   The line style tells them apart without colour (solid and thin, solid and thick, dashed and hatched, dotted);
+   the small square and the border carry a role colour as a second cue. The word stays in the ink, so it keeps
+   its contrast in both themes. boot.js makes a mark a button that opens its source. */
+.mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  box-sizing: border-box;
+  padding: 0.15em 0.5em;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: 0.1em;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  text-decoration: none;
+  cursor: default;
+}
+
+.mark::before {
+  content: "";
+  flex: none;
+  width: 0.6em;
+  height: 0.6em;
+  background: var(--ink);
+  border-radius: 1px;
+}
+
+.mark[role="button"] { cursor: help; }
+.mark[role="button"]:hover,
+.mark.is-open { background-color: var(--sunken); }
+
+.mark-fact { border: 1px solid var(--ink); }
+
+.mark-real {
+  border: 2px solid var(--teacher);
+  padding: calc(0.15em - 1px) calc(0.5em - 1px);
+}
+
+.mark-real::before { background: var(--teacher); }
+
+.mark-toy {
+  border: 1px dashed var(--ignored);
+  background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--hatch) 5px 6px);
+}
+
+.mark-toy::before { background: var(--ignored); }
+
+.mark-reading {
+  border: 2px dotted var(--positive);
+  padding: calc(0.15em - 1px) calc(0.5em - 1px);
+}
+
+.mark-reading::before { background: var(--positive); }
+
+/* In a lab's header the name and the question take a line each, and the marks (one or two) follow side by side. */
+.lab > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.5rem;
+}
+
+.lab > header > :not(.mark) { flex: 1 0 100%; }
+
+/* A why card: one decision of a paper or of our protocol, with its reason, its evidence, what it does to
+   training, and what happens if it changes. The markup is flat: five h4 labels, each followed by its paragraph
+   (.why-decision, .why-why, .why-evidence, .why-training, .why-change). Above 760 px the labels stand in a
+   column beside their paragraphs. In the ledger (Part 8) a last paragraph, .why-origin, links back. */
+aside.why {
+  margin-block: 1.5rem;
+  padding: 0.9rem 1.1rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--ink);
+  border-radius: 0 6px 6px 0;
+}
+
+aside.why[hidden] { display: none; }
+
+aside.why > h4 {
+  margin: 0.8rem 0 0.15rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+aside.why > h4:first-child { margin-top: 0; }
+aside.why > p { margin: 0; }
+aside.why > .why-decision { font-size: var(--step-0); font-weight: 600; line-height: 1.4; }
+aside.why > .why-origin { margin-top: 0.8rem; font-size: var(--step--1); color: var(--muted); }
+
+@media (min-width: 760px) {
+  aside.why {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 9.5rem) minmax(0, 1fr);
+    gap: 0.75rem 1.25rem;
+    align-items: baseline;
+  }
+  aside.why > h4 { grid-column: 1; margin: 0; }
+  aside.why > p { grid-column: 2; }
+  aside.why > .why-origin { grid-column: 1 / -1; margin-top: 0.1rem; }
+}
+
+/* An equation walk: the formula, every symbol, a worked example, the gradient, and what the term does over
+   training. <section class="walk" data-walk="id"> holds an h4 and then exactly these five blocks, in this order:
+   div.walk-formula, dl.walk-symbols, div.walk-example, div.walk-gradient, div.walk-training. The labels are
+   drawn by the stylesheet. */
+section.walk {
+  display: grid;
+  gap: 0.9rem;
+  margin-block: 2rem;
+  padding: 1rem 1.1rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+section.walk > h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.walk > :is(.walk-formula, .walk-symbols, .walk-example, .walk-gradient, .walk-training)::before {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.walk-formula::before { content: "The formula"; }
+.walk-symbols::before { content: "Every symbol"; grid-column: 1 / -1; margin-bottom: 0; }
+.walk-example::before { content: "Worked example"; }
+.walk-gradient::before { content: "The gradient"; }
+.walk-training::before { content: "Over training"; }
+
+.walk-formula {
+  padding: 0.7rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 1.1em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+  background: var(--sunken);
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.walk-symbols {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.3rem 1rem;
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.45;
+}
+
+.walk-symbols dt { font-family: var(--font-mono); font-weight: 600; }
+.walk-symbols dd { margin: 0; }
+
+.walk :is(.walk-example, .walk-gradient, .walk-training) {
+  padding-inline-start: 0.9rem;
+  border-inline-start: 2px solid var(--line);
+}
+
+.walk :is(.walk-example, .walk-gradient, .walk-training) > :last-child { margin-bottom: 0; }
+
+/* The scenes engine (src/scenes.js): the pipeline film of Part 7. Scenes.create(root, ...) draws into root
+   (a lab's .lab-body) with exactly these classes:
+   .scene                  the root, a size container
+   .scene-controls         the control strip: .scene-buttons (button.scene-btn: play or pause, back, forward),
+                           .scene-speed (a .segmented group: 0.5, 1, 2), ol.scene-scrub (one li > button.scene-square
+                           per stop; aria-current="step" on the current one, .is-done on the passed ones),
+                           .scene-status (the stop's number and name)
+   .scene-body             the stage and the explain panel
+   .scene-stage            the stop's own canvas or SVG
+   .scene-explain          the explain panel: h4.scene-title, then the copy with its marks */
+.scene {
+  container-type: inline-size;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem 1rem;
+}
+
+.scene-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.scene-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.scene-speed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.scene-scrub {
+  display: flex;
+  flex: 1 1 14rem;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-scrub > li { margin: 0; }
+
+.scene-square {
+  min-width: 1.7rem;
+  height: 1.7rem;
+  min-height: 0;
+  padding: 0 0.3rem;
+  font: 500 var(--step--2)/1 var(--font-mono);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+.scene-square.is-done {
+  color: var(--ink);
+  border-color: var(--control);
+}
+
+.scene-square:where([aria-current="step"], .is-current) {
+  font-weight: 700;
+  color: var(--on-ink);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.scene-status {
+  flex: 1 1 100%;
+  margin: 0;
+  font: var(--step--2)/1.3 var(--font-mono);
+  color: var(--muted);
+}
+
+.scene-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+@container (min-width: 700px) {
+  .scene-body { grid-template-columns: minmax(0, 1.5fr) minmax(15rem, 1fr); }
+}
+
+.scene-stage {
+  min-width: 0;
+  padding: 0.5rem;
+  overflow-x: auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.scene-stage > :is(canvas, svg) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.scene-explain {
+  min-width: 0;
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+
+.scene-explain > * { margin-block: 0 0.6rem; }
+.scene-explain > :last-child { margin-bottom: 0; }
+
+.scene-title {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* A lab that waits for its real numbers (data-needs on the section) shows this line until its widget draws
+   or its load fails. Static HTML keeps .lab-body empty, so :empty holds until boot.js fills it. */
+.lab[data-needs] .lab-body:empty::before {
+  content: "loading the real numbers\2026";
+  display: block;
+  grid-column: 1 / -1;
+  padding: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+/* The photograph chooser of a page with bundle images (boot.js, Core.imageChooser and Core.bundleImagePicker). */
+.bundle-pick {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.bundle-pick > label {
+  font-size: var(--step--1);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.bundle-pick select { width: 100%; }
+
+/* Page furniture */
+
+.pager {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-block: 3rem 1rem;
+}
+
+.pager > a {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.7rem 0.9rem;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.pager > a:hover { background: var(--sunken); }
+.pager-prev { grid-column: 1; }
+.pager-next { grid-column: 2; text-align: end; }
+
+.pager-dir {
+  font: 500 var(--step--2)/1.2 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pager-title { font-weight: 600; }
+
+@media (max-width: 559.98px) {
+  .pager { grid-template-columns: minmax(0, 1fr); }
+  .pager-prev,
+  .pager-next { grid-column: 1; text-align: start; }
+}
+
+/* Part 0: the map of the eight parts */
+.map {
+  display: grid;
+  gap: 0.6rem;
+  margin-block: 0 1rem;
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+.map > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.2rem 0.8rem;
+  align-items: baseline;
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.map-part {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.map-link { font-weight: 600; }
+
+.map-time {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.map-sentence {
+  grid-column: 2 / -1;
+  margin: 0;
+}
+
+@media (max-width: 559.98px) {
+  .map > li { grid-template-columns: minmax(0, 1fr) auto; }
+  .map-part { grid-column: 1 / -1; }
+  .map-sentence { grid-column: 1 / -1; }
+}
+
+/* Part 8: the why ledger and its filter */
+.ledger-filter {
+  display: grid;
+  gap: 0.3rem;
+  margin-block: 1rem;
+}
+
+.ledger-filter > label { font-weight: 600; }
+
+.ledger-filter input[type="search"] {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+  font: var(--step-0)/1.3 var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--control);
+  border-radius: 5px;
+}
+
+.ledger-count {
+  margin: 0;
+  font: var(--step--2)/1.3 var(--font-mono);
+  color: var(--muted);
+}
+
+.ledger-group[hidden] { display: none; }
+
+.ledger-group-title {
+  margin-block: 2rem 0.6rem;
+  font-size: var(--step-1);
+}
+
+/* The glossary and the end matter of a page */
+.end { margin-block-start: 3.5rem; }
+.end > h2 { margin-block-start: 0; }
+
+/* A figure that breaks out of the reading column like a lab (class wide-fig on the <figure>): the same width as a lab,
+   centred on the page, whichever column holds it, with its caption kept to the reading measure. The rule of section
+   4.6's architecture figure in Part 4 (it was a copy scoped to .p4 in sections_p4.html). The three rules by id in
+   section 11 below (#fig-2-8-architecture, #fig-4-3-pipeline, #fig-4-4-two-levels) are the first explainer's own copies
+   of it; no page of this course has those figures, and a new wide figure takes the class instead. */
+.wide-fig {
+  --lab-w: min(var(--wide), calc(100vw - 3 * var(--gutter)));
+  box-sizing: border-box;
+  width: var(--lab-w);
+  max-width: none;
+  margin-inline: calc((100% - var(--lab-w)) / 2);
+}
+
+@supports (width: 1cqi) {
+  .wide-fig { --lab-w: min(var(--wide), 100cqi); }
+}
+
+.wide-fig > figcaption {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+@media (forced-colors: active) {
+  .mark,
+  aside.why,
+  section.walk,
+  .scene-stage,
+  .pager > a,
+  .map > li { border-color: CanvasText; }
+
+  .mark::before { forced-color-adjust: none; }
+}
+
+/* 11. The ported labs' styles: Lab M (lab-4c-end-to-end) and Lab N (lab-5d-sets-nonlocal) ---------------
+   Copied unchanged from the first explainer, except that Lab N's selector names its v2 lab id. */
+
+/* Lab M */
+/* The end-to-end lab (src/labs_part4.js) and the paper-style figure that it
+   shares with section 2.8 (LabM.figure). New classes only: no rule above is
+   changed. .lmf* is the figure, .lm-* the lab. */
+
+/* The figure: a wide and a tall drawing; the one that fits the width shows. */
+.lmf {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.lmf-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  overflow: visible;
+}
+
+.lmf-tall { display: none; }
+
+@container (max-width: 699.98px) {
+  .lmf-wide { display: none; }
+  .lmf-tall { display: block; max-width: 440px; margin-inline: auto; }
+}
+
+@supports not (container-type: inline-size) {
+  @media (max-width: 759.98px) {
+    .lmf-wide { display: none; }
+    .lmf-tall { display: block; max-width: 440px; margin-inline: auto; }
+  }
+}
+
+.lmf-svg text { fill: var(--ink); }
+.lmf-svg text.lmf-small,
+.lmf-svg text.lmf-lab { fill: var(--muted); }
+.lmf-svg text.lmf-title { font-family: var(--font-body); font-weight: 700; }
+
+.lmf-shape { fill: var(--surface); stroke: var(--role, var(--muted)); stroke-width: 1.5; }
+.lmf-loss .lmf-shape { stroke: var(--ink); stroke-width: 1.75; }
+.lmf-tok-q { fill: var(--role, var(--ink)); }
+.lmf-tok-cls { fill: var(--ink); stroke: var(--ink); }
+.lmf-hit { fill: transparent; stroke: none; }
+.lmf-cropgrid { fill: none; stroke: var(--line); stroke-width: 1; }
+.lmf-empty { fill: var(--sunken); }
+.lmf-edge { fill: none; stroke: var(--role, var(--muted)); stroke-width: 1.5; stroke-linejoin: round; }
+.lmf-head { fill: var(--role, var(--muted)); stroke: none; }
+.lmf-ema { stroke-dasharray: 5 4; }
+.lmf-sg { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.lmf-grid { fill: none; stroke: var(--paper); stroke-opacity: 0.5; stroke-width: 0.6; }
+.lmf-frame { fill: none; stroke: var(--muted); stroke-width: 1; }
+.lmf-nbr { fill: var(--ignored); fill-opacity: 0.6; stroke: var(--ignored); stroke-width: 1; }
+.lmf-nbr.lmf-wrapped { stroke: var(--ink); stroke-dasharray: 2 2; }
+.lmf-pos { fill: none; stroke: var(--positive); stroke-width: 2.4; }
+.lmf-q { fill: none; stroke: var(--ink); stroke-width: 2.4; }
+.lmf-key-q { fill: none; stroke: var(--ink); stroke-width: 2; }
+.lmf-key-nbr { fill: var(--ignored); fill-opacity: 0.6; }
+.lmf-key-pos { fill: none; stroke: var(--positive); stroke-width: 2; }
+.lmf-off { opacity: 0.38; }
+
+/* the current stop's boxes, in the lab's live map */
+.lmf-node.is-lit .lmf-shape { stroke-width: 3; fill: var(--sunken); }
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .lmf-node.is-lit .lmf-shape { fill: color-mix(in srgb, var(--role, var(--ink)) 16%, var(--surface)); }
+}
+.lmf-node.is-lit text.lmf-t { font-weight: 700; }
+.lmf-live :is(.lmf-node, .lmf-panel-c) { cursor: pointer; }
+.lmf-live .lmf-node:hover .lmf-shape { stroke-width: 2.5; }
+
+/* the EMA arrow and the stop-gradient mark are click targets too */
+.lmf-link.is-lit :is(.lmf-edge, .lmf-sg) { stroke-width: 3; }
+.lmf-live .lmf-link:hover :is(.lmf-edge, .lmf-sg) { stroke-width: 2.5; }
+
+/* the static copy in section 2.8 breaks out of the reading column like a lab */
+#fig-2-8-architecture {
+  --lab-w: min(var(--wide), calc(100vw - 3 * var(--gutter)));
+  box-sizing: border-box;
+  width: var(--lab-w);
+  max-width: none;
+  margin-inline: calc((100% - var(--lab-w)) / 2);
+}
+
+@supports (width: 1cqi) {
+  #fig-2-8-architecture { --lab-w: min(var(--wide), 100cqi); }
+}
+
+#fig-2-8-architecture > figcaption {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* The lab: the map, the stop strip, the stage (a picture panel and a
+   numbers panel) and the control strip. */
+.lm-map-wrap {
+  padding: 0.9rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.lm-map > summary {
+  margin-bottom: 0.5rem;
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.lm-map:not([open]) > summary { margin-bottom: 0; }
+
+.lm-strip-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.lm-strip-bar > .control-hint { flex: 1 1 100%; margin: 0; }
+.lm-stops { flex: 1 1 18rem; }
+.lm-stops > li > button { width: 100%; height: 100%; }
+
+.lm-stage { container-type: inline-size; }
+.lm-stage-head { display: grid; gap: 0.15rem; }
+
+.lm-title {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--step-1);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.lm-status { display: grid; gap: 0.3rem; }
+
+.lm-status-text {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.lm-progress {
+  height: 4px;
+  overflow: hidden;
+  background: var(--sunken);
+  border-radius: 2px;
+}
+
+.lm-progress[hidden] { display: none; }
+
+.lm-progress-bar {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--ink);
+}
+
+.lm-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem 1.25rem;
+  align-items: start;
+}
+
+@container (min-width: 620px) {
+  .lm-split { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); }
+}
+
+.lm-picture,
+.lm-numbers {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.lm-numbers {
+  gap: 0.55rem;
+  font-size: var(--step--1);
+  line-height: 1.5;
+  overflow-wrap: anywhere; /* long tensor names break instead of running out */
+}
+
+.lm-numbers > * { margin: 0; }
+
+.lm-eq,
+.lm-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.lm-eq {
+  padding: 0.3rem 0.6rem;
+  background: var(--sunken);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+.lm-eqs { display: grid; gap: 0.2rem; }
+
+.lm-toy {
+  padding-inline-start: 0.65rem;
+  border-inline-start: 2px dashed var(--muted);
+  color: var(--muted);
+}
+
+.lm-notice {
+  padding: 0.6rem 0.8rem;
+  background: var(--sunken);
+  border: 1px dashed var(--control);
+  border-radius: 5px;
+}
+
+.lm-steps,
+.lm-list {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding-inline-start: 1.3em;
+}
+
+.lm-table { width: auto; overflow-wrap: normal; } /* words wrap at spaces only */
+.lm-table :is(th, td) { padding: 0.2rem 0.35rem; }
+/* headers may wrap at their spaces, so stop 1's six columns fit a phone */
+.lm-table thead th { white-space: normal; letter-spacing: 0; }
+.lm-numbers .chip { white-space: nowrap; }
+
+.lm-strip { display: grid; gap: 0.2rem; }
+
+.lm-hover {
+  min-height: 1.3em;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--muted);
+}
+
+.lm-pick { cursor: pointer; }
+svg.lm-chart { max-width: 100%; height: auto; }
+.lm-mark { stroke: var(--ink); stroke-width: 2; }
+.lm-hist { --role: var(--control); }
+.lm-heads { gap: 0.5rem 0.6rem; }
+
+.lm-follow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+}
+
+.lm-block-control {
+  padding: 0.5rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+
+/* Lab M switches its controls off with aria-disabled while a whole step is
+   computed, so that a focused control keeps the keyboard focus; these rules
+   give them the look of the disabled ones above. */
+.lm-controls .segmented > label > input[aria-disabled="true"] + span {
+  color: var(--muted);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.lm-controls input[aria-disabled="true"] { cursor: not-allowed; accent-color: var(--ignored); }
+.lm-controls .toggle:has(> input[aria-disabled="true"]) { color: var(--muted); cursor: not-allowed; }
+
+/* Part 4 and Lab N */
+/* Section 4.3's pipeline figure (#fig-4-3-pipeline, drawn by hand in
+   src/sections_part4.html): a wide and a tall drawing, and the one that fits
+   the width shows, as in section 2.8's figure. The tall one takes over below a
+   wider container than there, because this drawing holds more text. Lab N
+   (src/labs_part5.js) draws with the shared classes and needs none here.
+   New classes only: no rule above is changed. */
+.p4f {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.p4f-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  overflow: visible;
+}
+
+.p4f-tall { display: none; }
+
+@container (max-width: 899.98px) {
+  .p4f-wide { display: none; }
+  .p4f-tall { display: block; max-width: 440px; margin-inline: auto; }
+}
+
+@supports not (container-type: inline-size) {
+  @media (max-width: 959.98px) {
+    .p4f-wide { display: none; }
+    .p4f-tall { display: block; max-width: 440px; margin-inline: auto; }
+  }
+}
+
+.p4f-svg text { fill: var(--ink); }
+.p4f-svg text.p4f-muted { fill: var(--muted); }
+.p4f-svg text.p4f-title { font-family: var(--font-body); font-weight: 700; }
+.p4f-svg .p4f-tag { fill: var(--role, var(--ink)); font-weight: 700; }
+
+.p4f-box { fill: var(--surface); stroke: var(--role, var(--muted)); stroke-width: 1.5; }
+.p4f-new .p4f-box { stroke-width: 3; }
+.p4f-loss .p4f-box { stroke: var(--ink); stroke-width: 1.75; }
+.p4f-out .p4f-box { fill: none; stroke: var(--ignored); stroke-dasharray: 5 4; }
+.p4f-chip { fill: var(--sunken); }
+.p4f-edge { fill: none; stroke: var(--role, var(--muted)); stroke-width: 1.5; stroke-linejoin: round; }
+.p4f-head { fill: var(--role, var(--muted)); stroke: none; }
+.p4f-ema { stroke-dasharray: 5 4; }
+.p4f-sg { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+
+/* the static figure breaks out of the reading column like a lab, as
+   #fig-2-8-architecture does */
+#fig-4-3-pipeline {
+  --lab-w: min(var(--wide), calc(100vw - 3 * var(--gutter)));
+  box-sizing: border-box;
+  width: var(--lab-w);
+  max-width: none;
+  margin-inline: calc((100% - var(--lab-w)) / 2);
+}
+
+@supports (width: 1cqi) {
+  #fig-4-3-pipeline { --lab-w: min(var(--wide), 100cqi); }
+}
+
+#fig-4-3-pipeline > figcaption {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* Lab N hides the controls that the chosen objective does not use (the temperature, the margin, beta) with the
+   hidden attribute; .control sets display: grid, which would otherwise keep them on screen. A new rule; no rule
+   above is changed. */
+.lab[data-lab="lab-5d-sets-nonlocal"] .control[hidden] { display: none; }
+
+/* Lab N's control headers (the lead's browser check of Part 4, finding B1). The shared .control grid above keeps
+   the label and the live value on one line and gives the value its full width, so a long value (the rule's, the
+   objective's) squeezed the label to a letter per line in the 240 px strip. In Lab N the header wraps instead: the
+   label keeps at least 7rem beside its value; a value that does not fit beside it drops under the label and wraps
+   there at spaces; nothing is clipped. The input, the buttons, the hints and the small lines below each keep a line
+   of their own, as before. The hidden rule above still wins (it is more specific). New rules for Lab N only; the
+   shared .control rules above are unchanged. */
+.lab[data-lab="lab-5d-sets-nonlocal"] .control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+
+.lab[data-lab="lab-5d-sets-nonlocal"] .control > :where(label, .control-label):first-child {
+  flex: 1 1 7rem;
+  min-width: 0;
+}
+
+.lab[data-lab="lab-5d-sets-nonlocal"] .control > :where(output, .value) {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.lab[data-lab="lab-5d-sets-nonlocal"] .control > :not(:first-child):not(output):not(.value) {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+/* Lab N's stage beside its controls (the lead's browser check of Part 4, finding B3). From 760 px up the control
+   strip and the stage stand side by side (the .lab-body grid above; the query at 759.98 px stacks them), and Lab N's
+   strip, with its explanations, runs about a screen past the stage, which left the right column blank beside the
+   lower controls. There the stage sits at the end of its grid area and sticks to the bottom of the viewport, never
+   above the top of that area: it scrolls as before until its readouts are in view, then stays beside the learning
+   rate, Train and the anchor. Below 760 px the strip stands above the stage and the stage stays in the flow, so
+   this rule lives only inside the two-column widths. A new rule for Lab N only; no rule above is changed. */
+@media (min-width: 760px) {
+  .lab[data-lab="lab-5d-sets-nonlocal"] .lab-body > .lab-stage {
+    position: sticky;
+    bottom: 0;
+    align-self: end;
+  }
+}
+
+/* Section 4.4's figure (#fig-4-4-two-levels): the drawing of 2.8 in the contrastive wiring of LabM.figure, drawn when
+   the page is built (build/render_figure.js --wiring contrastive). It breaks out of the reading column as
+   #fig-2-8-architecture does. Its wide drawing holds more text than 2.8's, so the tall one takes over below a 900 px
+   container, as for 4.3's figure, instead of 700 px. The heads that the run's patch term does not use (.lmf-drop)
+   have their shapes dimmed, after the DINO wiring's .lmf-off, and dashed; their labels stay at full opacity in the
+   muted ink, which keeps them legible: 6.59:1 against the paper in the light theme and 8.42:1 in the dark (6.86:1
+   and 8.21:1 against the dimmed box), above WCAG's 4.5:1 for small text, where the whole box at half opacity left
+   "dropped" at 2.33:1 and 2.92:1. In the side panel the negatives are shaded in the negative colour and the other
+   patches in the ignored grey, over the picture, and the key shows the same marks. Every colour is a token, so both
+   themes follow. New rules; no rule above is changed. */
+#fig-4-4-two-levels {
+  --lab-w: min(var(--wide), calc(100vw - 3 * var(--gutter)));
+  box-sizing: border-box;
+  width: var(--lab-w);
+  max-width: none;
+  margin-inline: calc((100% - var(--lab-w)) / 2);
+}
+
+@supports (width: 1cqi) {
+  #fig-4-4-two-levels { --lab-w: min(var(--wide), 100cqi); }
+}
+
+#fig-4-4-two-levels > figcaption {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+@container (max-width: 899.98px) {
+  #fig-4-4-two-levels .lmf-wide { display: none; }
+  #fig-4-4-two-levels .lmf-tall { display: block; max-width: 440px; margin-inline: auto; }
+}
+
+@supports not (container-type: inline-size) {
+  @media (max-width: 959.98px) {
+    #fig-4-4-two-levels .lmf-wide { display: none; }
+    #fig-4-4-two-levels .lmf-tall { display: block; max-width: 440px; margin-inline: auto; }
+  }
+}
+
+.lmf-drop .lmf-shape { opacity: 0.5; stroke-dasharray: 4 3; }
+.lmf-svg .lmf-drop text { fill: var(--muted); }
+.lmf-neg { fill: var(--negative); fill-opacity: 0.7; stroke: var(--negative); stroke-width: 1; }
+.lmf-other { fill: var(--ignored); fill-opacity: 0.5; }
+.lmf-key-neg { fill: var(--negative); fill-opacity: 0.7; stroke: var(--negative); stroke-width: 1; }
+.lmf-key-other { fill: var(--ignored); fill-opacity: 0.5; }
+.lmf-key-drop { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.5; }
