@@ -89,7 +89,8 @@ def global_rules():
     msgs = {}
     for name, a, b in (("site.css = portfolio", REPO / "assets/css/site.css", HUB / "assets/css/site.css"),
                        ("site.js = portfolio", REPO / "assets/js/site.js", HUB / "assets/js/site.js")):
-        res[name] = a.exists() and b.exists() and a.read_bytes() == b.read_bytes()
+        # compared without carriage returns: git's autocrlf may give either checkout CRLF line endings
+        res[name] = a.exists() and b.exists() and a.read_bytes().replace(b"\r", b"") == b.read_bytes().replace(b"\r", b"")
     bad = []
     for css in sorted((REPO / "assets").glob("*.css")) + [REPO / "assets/css/site.css"]:
         for r in local_refs(read(css)):
