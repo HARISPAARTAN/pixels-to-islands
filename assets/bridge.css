@@ -1,0 +1,182 @@
+/* Bridge: the course's tokens and components on the portfolio's design system (css/site.css). Loaded last.
+
+   Rules of this file:
+   - nothing here targets .lab or anything inside it; the labs keep the course's own styles;
+   - the role colours (student, teacher, positive, negative, ignored, on-role) keep the course's values;
+   - site.css (portfolio) is loaded first and styles.css (course) after it. The course redefines a few tokens that the
+     portfolio also names (--surface, --muted, --font-display, --font-mono, --radius), so those are restated here with
+     the portfolio's values; tools/check-explainer.py compares them with site.css. */
+
+/* ---- 1. tokens: the course's names, the portfolio's values --------------------------------------------------- */
+
+:root:not([data-theme="light"]),
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #121820;
+  --muted: #93A1B0;
+  --student: #43B18D; --teacher: #579FDB; --positive: #F17855; --negative: #B47DD4; --ignored: #6A7581;
+  --on-role: #0B0F14;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --surface: #FFFFFF;
+  --muted: #5B6472;
+  --student: #2A7F62; --teacher: #1F6FB2; --positive: #E4572E; --negative: #7A3E9D; --ignored: #9AA5B1;
+  --on-role: #FFFFFF;
+}
+:root, :root:not([data-theme="light"]), :root[data-theme="dark"], :root[data-theme="light"] {
+  --paper: var(--bg);
+  --ink: var(--text);
+  --line: var(--border);
+  --sunken: var(--surface-2);
+  --hatch: var(--border);
+  --focus: var(--accent);
+  --control: var(--muted);
+  --on-ink: var(--bg);
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: var(--font-text);
+  --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  --pf-radius: 14px;
+}
+
+/* the course sets a flat paper background on body; the portfolio's glow and grid come back */
+body {
+  background-color: var(--bg);
+  background-image: var(--glow), linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 100% 100%, 48px 48px, 48px 48px;
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* ---- 1b. site.css's global rules, undone inside the course's main --------------------------------------------------
+   site.css sets border-box on every element, display:block on images and no margin on paragraphs; the course's
+   stylesheet was written without any of these, so inside .page they go back to the browser's defaults. (Zero
+   specificity: the course's own rules still win.) */
+:where(.page) *, :where(.page) *::before, :where(.page) *::after { box-sizing: revert; }
+:where(.page) img { display: inline; }
+:where(.page) p { margin-block: 0 1rem; }
+:where(.page) h3 { line-height: 1.2; letter-spacing: normal; }
+
+/* ---- 2. header and footer ---------------------------------------------------------------------------------- */
+
+/* the course's boot.js looks for .topbar (it measures it and moves the progress line in it), so the header carries
+   that class too; the course's own top bar rules are put back to the portfolio's here */
+.site-header.topbar {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border-bottom: 0;
+}
+.site-header a, .site-footer a { text-decoration: none; }
+.site-header .nav-links a:hover, .site-footer a:hover { text-decoration: none; }
+.site-footer a { color: var(--accent); }
+.site-footer a:hover { text-decoration: underline; }
+.brand { color: var(--text); }
+/* the course styles every .mark as a source badge (border, capitals, a small square); the brand's mark is not one */
+.brand .mark { padding: 0; border: 0; gap: 0; text-transform: none; letter-spacing: -0.02em; vertical-align: baseline; white-space: normal; }
+.brand .mark::before { content: none; }
+.site-header .nav { column-gap: 12px; }
+.crumb { font-family: var(--font-mono); color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+.crumb:hover { color: var(--text); }
+.nav-links a { white-space: nowrap; }
+/* nine part links do not fit beside the brand and the icons: from 961 px up they take a second row */
+@media (min-width: 961px) {
+  .site-header .nav { flex-wrap: wrap; min-height: 0; padding-top: 8px; }
+  .site-header .nav-actions { margin-left: auto; }
+  .site-header .nav-links { order: 3; flex-basis: 100%; margin: 0; padding: 0 0 8px; flex-wrap: wrap; }
+  .site-header .nav-links a { font-size: 0.86rem; padding: 6px 10px; }
+}
+/* up to 960 px the portfolio's menu button takes over (site.css does this at 900 px) */
+@media (max-width: 960px) {
+  .site-header .nav { flex-wrap: wrap; }
+  #menu-toggle { display: inline-grid; margin-left: auto; }
+  .nav-actions { order: 2; }
+  .nav-links { display: none; order: 3; flex-basis: 100%; flex-direction: column; gap: 2px; padding: 6px 0 12px; margin: 0; }
+  .nav-links.open { display: flex; }
+}
+.nav-links a[aria-current="page"] { color: var(--text); background: var(--surface-2); }
+.site-header .progress { height: 2px; overflow: hidden; background: var(--border); }
+.site-header .progress-bar { background: var(--accent); }
+
+/* ---- 3. page frame ------------------------------------------------------------------------------------------ */
+
+.page { max-width: var(--max); margin-inline: auto; }
+/* the reading column is aligned to the portfolio container's left edge instead of centred, and widened:
+   hero, sections, pager and glossary span the container; paragraphs, lists and boxes keep a readable measure
+   of 80 characters; labs take the container's inner width (--wide feeds the course's --lab-w) */
+:root { --measure: 80ch; --wide: calc(var(--max) - 2 * var(--gutter)); }
+.page > :not(.lab) { max-width: none; margin-inline: 0; }
+.page .sec > :is(p, ul, ol, dl, blockquote, .note, .eq, details, .outcomes, .sources),
+.page .prologue > p, .page .part-head > p, .page .end > :is(p, dl) { max-width: var(--measure); }
+
+/* ---- 4. hero: .prologue (start page) and .part-head (the other eight) ------------------------------------------ */
+
+.prologue, .part-head { padding-block: clamp(32px, 5vw, 64px) clamp(16px, 3vw, 32px); }
+.page-title, .part-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-block: 0;
+}
+.prologue .eyebrow, .part-head .eyebrow {
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.part-head .part-kicker { display: none; }
+.prologue .lead, .part-head .lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.55; color: var(--muted); max-width: 56ch; margin-top: 18px; }
+.prologue .actions { margin-top: 26px; }
+.prologue .actions .btn {
+  min-height: 0;
+  padding: 11px 16px;
+  font: 500 0.95rem/1.6 var(--font-text);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+.prologue .actions .btn:hover { background: var(--surface-2); }
+.prologue .actions .btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.prologue .actions .btn.primary:hover { filter: brightness(1.06); }
+
+/* ---- 5. sections: the number as the portfolio's index line ----------------------------------------------------- */
+
+.page > .sec { margin-block-start: 0; padding-block: clamp(28px, 4.5vw, 52px) 0; border-top: 1px solid var(--border); }
+.page > .part-head + .sec, .page > .prologue + .sec { margin-block-start: 0; }
+.sec-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.6rem, 3.2vw, 2.2rem); letter-spacing: -0.015em; line-height: 1.15; }
+.sec-title .sec-num {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+.end > h2 { font-family: var(--font-display); }
+
+/* links in the running text: the portfolio's accent, underlined so that they read as links */
+.sec > :is(p, ul, ol, dl) a, .prologue a:not(.btn), .part-head a, .end a {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.sec > :is(p, ul, ol, dl) a:hover, .prologue a:not(.btn):hover, .part-head a:hover, .end a:hover { text-decoration-color: var(--accent); }
+
+/* ---- 6. content blocks on the portfolio's card tokens -------------------------------------------------------- */
+
+aside.why { border-radius: var(--radius-sm); border-inline-start: 3px solid var(--accent); box-shadow: var(--shadow); }
+section.walk { border-radius: var(--pf-radius); box-shadow: var(--shadow); }
+.map > li { border-radius: var(--radius-sm); box-shadow: var(--shadow); }
+.map-link { color: var(--accent); }
+
+/* ---- 7. pager as portfolio buttons ----------------------------------------------------------------------------- */
+
+.pager { padding-top: 32px; border-top: 1px solid var(--border); }
+.pager > a { border-radius: var(--radius-sm); color: var(--text); }
+.pager > a:hover { background: var(--surface-2); }
+.pager > .pager-next { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.pager > .pager-next:hover { background: var(--accent); filter: brightness(1.06); }
+.pager > .pager-next .pager-dir { color: var(--accent-fg); opacity: 0.75; }

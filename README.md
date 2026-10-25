@@ -25,7 +25,11 @@ Marks on every statement keep the kinds apart: **Fact** (from a paper or from co
 - Static pages generated from a source tree (copy, labs, glossary and fact sheets) by an assembler with page checks; this repository holds the built site.
 - `assets/core.js`, `scenes.js`, `toy_vit.js`, `boot.js`: the shared runtime; `assets/labs_p*.js`: the labs of each part, mounted lazily as they scroll into view.
 - `data/`: the real-data bundle, eight photographs from the COCO train2017 collection with per-row int8-quantised tokens and attention keys from DINO, the released SelfPatch checkpoint and the thesis's own runs.
-- The page palette and typefaces follow my portfolio (`assets/theme-portfolio.css`, fonts self-hosted under the SIL Open Font License); the course's own role colours are unchanged: green student, blue teacher, orange positive, purple negative, grey ignored. No request leaves the page.
+- The header, footer, stylesheet and typefaces are my portfolio's (`assets/css/site.css`, `assets/js/site.js`, fonts self-hosted under the SIL Open Font License); `assets/bridge.css` maps the course's tokens and components onto them. The course's own role colours are unchanged: green student, blue teacher, orange positive, purple negative, grey ignored. No request leaves the page.
+
+## How the pages are built
+
+The pages are generated from the course build by `tools/skin-explainer.py` in the owner's tools folder, so the course content is edited in the build, not here. `python tools/check-explainer.py` verifies a build against the rules of the skin (header and footer, links, script order, ids, labs byte for byte). `python tools/shoot-explainer.py` renders screenshots of the start page and one part, the social preview image `assets/og.png` and the thumbnail that the portfolio shows for the course. Both tools use only the standard library and a Playwright copy that is already installed.
 
 ## Credits
 

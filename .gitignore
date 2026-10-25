@@ -2,3 +2,6 @@ node_modules/
 *.log
 .DS_Store
 Thumbs.db
+tools/node_modules/
+.superpowers/
+__pycache__/
